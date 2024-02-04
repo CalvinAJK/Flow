@@ -25,6 +25,9 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      - name: Install tailwindcss
+        run: npm install tailwindcss@latest
+
       - name: Build with dotnet
         run: dotnet build --configuration Release
 

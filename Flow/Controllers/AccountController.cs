@@ -42,8 +42,9 @@ namespace Flow.Controllers
             // Populate UserProfileViewModel
             var Profile = new ProfileViewModel()
             {
-                Name = User.Identity.Name,
-                EmailAddress = User.Claims.FirstOrDefault(c => c.Type == "email")?.Value,
+                /*User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value*/
+                Name = User.Claims.FirstOrDefault(c => c.Type == "nickname")?.Value,
+                EmailAddress = User.Identity.Name,
                 ProfileImage = User.Claims.FirstOrDefault(c => c.Type == "picture")?.Value,
             };
 

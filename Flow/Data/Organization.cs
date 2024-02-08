@@ -11,7 +11,7 @@ namespace Flow.Data
 
         public string Description { get; set; }
 
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         // Navigation property for OrganizationRoles
         public ICollection<OrganizationRole> OrganizationRoles { get; set; }

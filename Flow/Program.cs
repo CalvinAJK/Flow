@@ -1,4 +1,6 @@
 using Auth0.AspNetCore.Authentication;
+using Flow.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,12 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
 });
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<FlowContext>(options =>
+{
+    var cs = builder.Configuration.GetConnectionString("Connection");
+    options.UseSqlServer(cs);
+});
 
 var app = builder.Build();
 

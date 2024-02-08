@@ -14,8 +14,6 @@ namespace Flow.Controllers
         public OrganizationController(FlowContext context)
         {
             _context = context;
-            _userId = _httpContextAccessor.HttpContext.User.Claims
-                .FirstOrDefault(c => c.Type == "NameIdentifier")?.Value;
 
         }
 

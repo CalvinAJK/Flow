@@ -9,7 +9,7 @@
 @*     <link rel="stylesheet" href="~/Flow.styles.css" asp-append-version="true" /> *@
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
 </head>
-<body class="h-full">
+<body class="h-full bg-slate-100">
 
     <div x-data="{ open: false }" @@keydown.window.escape="open = false">
         <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
@@ -418,10 +418,11 @@
                     </div>
                 </div>
             </div>
-
+            
             <main class="py-10">
                 <div class="px-4 sm:px-6 lg:px-8">
                     <!-- Your content -->
+                    <partial name="_LoginPartial" />
                     @RenderBody()
                 </div>
             </main>

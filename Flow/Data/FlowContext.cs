@@ -8,6 +8,7 @@ namespace Flow.Data
         {
         }
 
+        public DbSet<User> Users { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationRole> OrganizationRoles { get; set; }
         public DbSet<Team> Teams { get; set; }

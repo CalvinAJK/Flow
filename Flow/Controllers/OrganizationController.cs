@@ -1,46 +1,38 @@
 ﻿using Flow.Data;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Flow.Controllers
 {
-    [Authorize]
     public class OrganizationController : Controller
     {
-
         private readonly FlowContext _context;
-        private string _userId;
 
         public OrganizationController(FlowContext context)
         {
             _context = context;
-
         }
 
+        // GET User's Organizations
+        public IActionResult GetUserOrganizations()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        /*        // GET User's Organizations
-                public IActionResult GetUserOrganizations()
-                {
-                    string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            bool userHasExistingOrganization = _context.OrganizationRoles.Any(o => o.UserId == userId);
 
-                    bool userHasExistingOrganization = _context.OrganizationRoles.Any(o => o.UserId == userId);
+            // If you need to retrieve user's organizations, you can do so here
+            var userOrganizations = _context.OrganizationRoles
+                .Where(o => o.UserId == userId)
+                .Select(o => o.Organization)
+                .ToList();
 
-                    // If you need to retrieve user's organizations, you can do so here
-                    var userOrganizations = _context.OrganizationRoles
-                        .Where(o => o.UserId == userId)
-                        .Select(o => o.Organization)
-                        .ToList();
+            ViewData["UserHasExistingOrganization"] = userHasExistingOrganization;
+            ViewData["UserOrganizations"] = userOrganizations;
 
-                    // Create a ViewModel to pass data to the layout
-                    var viewModel = new OrganizationLayoutViewModel
-                    {
-                        UserHasExistingOrganization = userHasExistingOrganization,
-                        UserOrganizations = userOrganizations
-                    };
+            return View();
+        }
 
-                    return View(viewModel);
-                }
-        */
         // GET: OrganizationController
         public ActionResult Index()
         {
@@ -62,24 +54,25 @@ namespace Flow.Controllers
         // POST: OrganizationController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description")] Organization organization)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,IsDeleted")] Organization organization)
         {
-
+            if (ModelState.IsValid)
+            {
                 _context.Add(organization);
                 await _context.SaveChangesAsync();
 
-            // Automatically assign the user who created the organization as admin
-            OrganizationRole orgRole = new OrganizationRole
+                // Automatically assign the user who created the organization as admin
+                OrganizationRole orgRole = new OrganizationRole
                 {
                     OrganizationId = organization.Id,
-                    UserId = _userId,
+                    UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
                     Role = "Admin"
                 };
                 _context.OrganizationRoles.Add(orgRole);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index), "Home");
-            
+                return RedirectToAction(nameof(Index));
+            }
             return View(organization);
         }
 

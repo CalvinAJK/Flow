@@ -13,8 +13,13 @@
 @using System.Security.Claims
     @inject SignInManager<IdentityUser> SignInManager
     @inject UserManager<IdentityUser> UserManager
+
+
 </head>
 <body class="h-full bg-slate-100">
+    @{
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    }
 
     <div x-data="{ open: false }" @@keydown.window.escape="open = false">
         <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
@@ -71,6 +76,7 @@
                             <ul role="list" class="flex flex-1 flex-col gap-y-7">
                                 <li>
                                     <ul role="list" class="-mx-2 space-y-1">
+                                        @await Component.InvokeAsync("UserHasExistingOrganization", new { userId = userId });
                                         <li>
                                             <!-- Current: "bg-gray-800 text-white", Default: "text-gray-400 hover:text-white hover:bg-gray-800" -->
                                             <a href="#" class="bg-gray-800 text-white group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
@@ -174,11 +180,6 @@
                     <ul role="list" class="flex flex-1 flex-col gap-y-7">
                         <li>
                             <ul role="list" class="-mx-2 space-y-1">
-                                @{
-                                    string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                                    // await Component.InvokeAsync("UserHasExistingOrganization", new { userId = userId });
-                                    
-                                }
                                 @await Component.InvokeAsync("UserHasExistingOrganization", new { userId = userId });
                                 <li>
                                     <!-- Current: "bg-gray-800 text-white", Default: "text-gray-400 hover:text-white hover:bg-gray-800" -->

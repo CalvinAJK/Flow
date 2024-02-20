@@ -9,8 +9,8 @@
 @*     <link rel="stylesheet" href="~/Flow.styles.css" asp-append-version="true" /> *@
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
 
-@using Flow.Data
-    @using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
     @inject SignInManager<IdentityUser> SignInManager
     @inject UserManager<IdentityUser> UserManager
 </head>
@@ -175,39 +175,11 @@
                         <li>
                             <ul role="list" class="-mx-2 space-y-1">
                                 @{
-                                    bool userHasExistingOrganization = ViewData["UserHasExistingOrganization"] as bool? ?? false;
-                                    var userOrganizations = ViewData["UserOrganizations"] as List<Organization>;
+                                    string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                                    // await Component.InvokeAsync("UserHasExistingOrganization", new { userId = userId });
+                                    
                                 }
-                                @if (userHasExistingOrganization == true)
-                                {
-                                    <li>
-                                        <select class="group flex gap-x-3 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-400 text-white bg-gray-900 ring-2 ring-inset ring-gray-800 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 font-semibold">
-                                            @foreach (var organization in Model.UserOrganizations)
-                                            {
-                                                <option>@organization.Name</option>
-                                            }
-                                        </select>
-                                    </li>
-                                }
-                                else
-                                {
-                                <li>
-                                    <button class="relative group flex gap-x-3 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-400 text-white bg-gray-900 ring-2 ring-inset ring-gray-800 hover:ring-2 hover:ring-indigo-600 sm:text-sm sm:leading-6 font-semibold" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
-                                        <span class="block truncate">Create Organization</span>
-                                        <span class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
-                                            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"></path>
-                                            </svg>
-                                        </span>
-                                    </button>
-                                </li>
-
-                                }
-                                
-
-                                
-
-
+                                @await Component.InvokeAsync("UserHasExistingOrganization", new { userId = userId });
                                 <li>
                                     <!-- Current: "bg-gray-800 text-white", Default: "text-gray-400 hover:text-white hover:bg-gray-800" -->
                                     <a href="#" class="bg-gray-800 text-white group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">

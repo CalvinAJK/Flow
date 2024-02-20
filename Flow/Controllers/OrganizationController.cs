@@ -14,25 +14,6 @@ namespace Flow.Controllers
             _context = context;
         }
 
-        // GET User's Organizations
-        public IActionResult GetUserOrganizations()
-        {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            bool userHasExistingOrganization = _context.OrganizationRoles.Any(o => o.UserId == userId);
-
-            // If you need to retrieve user's organizations, you can do so here
-            var userOrganizations = _context.OrganizationRoles
-                .Where(o => o.UserId == userId)
-                .Select(o => o.Organization)
-                .ToList();
-
-            ViewData["UserHasExistingOrganization"] = userHasExistingOrganization;
-            ViewData["UserOrganizations"] = userOrganizations;
-
-            return View();
-        }
-
         // GET: OrganizationController
         public ActionResult Index()
         {

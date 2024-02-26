@@ -7,7 +7,8 @@
         <select id="organizationSelect" class="group flex gap-x-3 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-400 text-white bg-gray-900 ring-2 ring-inset ring-gray-800 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 font-semibold">
         @foreach (var organization in Model)
         {
-            <option value="@organization.Id">@organization.Name</option>
+        var isSelected = (organization.Id == ViewBag.OrganizationId) ? "selected" : ""; 
+        <!option value="@organization.Id" @isSelected>@organization.Name</!option>
         }
             <option value="create"> Create Organization </option>
     </select>
@@ -18,9 +19,22 @@ else
     <p>No organizations found for the user.</p>
 }
 
+
+
+
+
+
+
+
+
+
+
+
 <script>
     // Handle organization change event
     document.addEventListener('DOMContentLoaded', function () {
+
+
         document.addEventListener('change', function (event) {
             if (event.target && event.target.id === 'organizationSelect') {
                 console.log("Organization changed");

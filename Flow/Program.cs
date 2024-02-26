@@ -15,6 +15,13 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<FlowContext>();
 builder.Services.AddControllersWithViews();
 
+
+// Add session support
+builder.Services.AddSession(options =>
+{
+    // Configure session options if needed
+});
+
 var app = builder.Build();
 
 // Custom middleware for handling 404 errors and redirecting to "/Home"
@@ -43,6 +50,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Use session
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();

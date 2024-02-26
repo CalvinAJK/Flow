@@ -34,7 +34,12 @@ namespace Flow.Controllers
                 // If the user doesn't have an existing organization selection, select the first organization from the database
                 if (organizationId == null)
                 {
-                    var firstOrganization = _context.Organizations.FirstOrDefault();
+                    // Find the first organization that the user belongs to based on the OrganizationRole table
+                    var firstOrganization = await _context.OrganizationRoles
+                        .Where(or => or.UserId == userId)
+                        .Select(or => or.Organization)
+                        .FirstOrDefaultAsync();
+
                     if (firstOrganization != null)
                     {
                         HttpContext.Session.SetInt32(SessionOrganizationId, firstOrganization.Id);

@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Flow.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Flow.Data
 {
-    public class FlowContext : IdentityDbContext<ApplicationUser>
+    public class FlowContext : IdentityDbContext<IdentityUser>
     {
         public FlowContext(DbContextOptions<FlowContext> options) : base(options)
         {

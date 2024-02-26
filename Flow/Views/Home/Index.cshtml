@@ -1,36 +1,42 @@
-﻿@model List<ApplicationUser>
+﻿@model List<Microsoft.AspNetCore.Identity.IdentityUser>
 @{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-
-    <!-- Display user's organization and role -->
-    <p>
-        You are currently in organization:  @ViewBag.OrganizationId <br />
-        Your role in this organization: @ViewBag.UserRole
-    </p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>User ID</th>
-                <th>User Name</th>
-                <th>Email</th>
-                <!-- Add more columns as needed -->
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in Model)
-            {
+    @if (Model != null && Model.Any())
+{
+        <!-- Display user's organization and role -->
+        <p>
+            You are currently in organization:  @ViewBag.OrganizationId <br />
+            Your role in this organization: @ViewBag.UserRole
+        </p>
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@user.Id</td>
-                    <td>@user.UserName</td>
-                    <td>@user.Email</td>
-                    <!-- Add more cells for additional user properties -->
+                    <th>User ID</th>
+                    <th>User Name</th>
+                    <th>Email</th>
+                    <!-- Add more columns as needed -->
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.Id</td>
+                        <td>@user.UserName</td>
+                        <td>@user.Email</td>
+                        <!-- Add more cells for additional user properties -->
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Create or join an organization!</p>
+    }
+
 </div>

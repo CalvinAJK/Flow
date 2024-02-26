@@ -11,18 +11,18 @@
         }
             <option value="create"> Create Organization </option>
     </select>
-</li>
-
-    <script>
-        document.getElementById("organizationSelect").addEventListener("change", function () {
-            var selectedOption = this.value;
-            if (selectedOption === "create") {
-                window.location.href = "@Url.Action("Create", "Organization")";
-            }
-        });
-    </script>
+</li> 
 }
 else
 {
     <p>No organizations found for the user.</p>
 }
+
+<script>
+    document.getElementById("organizationSelect").addEventListener("change", function () {
+        var selectedOption = this.value;
+        if (selectedOption === "create") {
+            window.location.href = "@Url.Action("Create", "Organization")";
+        }
+    });
+</script>

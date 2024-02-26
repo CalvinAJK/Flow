@@ -1,6 +1,7 @@
 ﻿using Flow.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Flow.Controllers
@@ -14,10 +15,16 @@ namespace Flow.Controllers
             _context = context;
         }
 
+        private bool OrganizationExists(int id)
+        {
+            return _context.Organizations.Any(e => e.Id == id);
+        }
+
         // GET: OrganizationController
         public ActionResult Index()
         {
-            return View();
+            var organizations = _context.Organizations.Where(o => o.IsDeleted == false).ToList();
+            return View(organizations);
         }
 
         // GET: OrganizationController/Details/5
@@ -58,24 +65,52 @@ namespace Flow.Controllers
         }
 
         // GET: OrganizationController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var organization = await _context.Organizations.FindAsync(id);
+            if (organization == null)
+            {
+                return NotFound();
+            }
+            return View(organization);
         }
 
         // POST: OrganizationController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Organization organization)
         {
-            try
+            if (id != organization.Id)
             {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(organization);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!OrganizationExists(organization.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            return View(organization);
         }
 
         // GET: OrganizationController/Delete/5

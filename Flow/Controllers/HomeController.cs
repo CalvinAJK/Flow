@@ -106,7 +106,9 @@ namespace Flow.Controllers
             if (userRole != null)
             {
                 // Set the user's role in the session or claims
+                HttpContext.Session.SetInt32("OrganizationId", organizationId);
                 HttpContext.Session.SetString("UserRole", userRole.Role);
+
                 // Set the organization ID and user role in ViewBag to access them in the view
                 ViewBag.OrganizationId = organizationId;
                 ViewBag.UserRole = userRole.Role;

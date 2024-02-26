@@ -22,6 +22,10 @@ namespace Flow.Views.ViewComponents
                 .Select(o => o.Organization)
                 .ToList();
 
+            // Retrieve organization ID from session
+            int? organizationId = HttpContext.Session.GetInt32("OrganizationId");
+            ViewBag.OrganizationId = organizationId; // Pass organization ID to the ViewBag
+
             return View(userHasExistingOrganization ? "UserHasExistingOrganization" : "UserHasNoExistingOrganization", userOrganizations);
         }
     }

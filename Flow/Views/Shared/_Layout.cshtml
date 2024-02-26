@@ -15,6 +15,7 @@
     @inject UserManager<IdentityUser> UserManager
 
 
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="h-full bg-slate-100">
     @{
@@ -78,7 +79,7 @@
                             <ul role="list" class="flex flex-1 flex-col gap-y-7">
                                 <li>
                                     <ul role="list" class="-mx-2 space-y-1">
-                                        @await Component.InvokeAsync("UserHasExistingOrganization", new { userId = userId });
+                                        @await Component.InvokeAsync("UserHasExistingOrganization", new { userId = userId })
                                         <li>
                                             <!-- Current: "bg-gray-800 text-white", Default: "text-gray-400 hover:text-white hover:bg-gray-800" -->
                                             <a href="#" class="bg-gray-800 text-white group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
@@ -192,7 +193,7 @@
                     <ul role="list" class="flex flex-1 flex-col gap-y-7">
                         <li>
                             <ul role="list" class="-mx-2 space-y-1">
-                                @await Component.InvokeAsync("UserHasExistingOrganization", new { userId = userId });
+                                @await Component.InvokeAsync("UserHasExistingOrganization", new { userId = userId })
                                 <li>
                                     <!-- Current: "bg-gray-800 text-white", Default: "text-gray-400 hover:text-white hover:bg-gray-800" -->
                                     <a href="#" class="bg-gray-800 text-white group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
@@ -408,7 +409,6 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

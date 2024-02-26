@@ -49,6 +49,22 @@ namespace Flow.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult ChangeOrganization(int organizationId)
+        {
+            // Update the session with the selected organization ID
+            HttpContext.Session.SetInt32(SessionOrganizationId, organizationId);
+
+            // Retrieve user's ID from claims
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Set the user's role based on the selected organization
+            SetUserRole(userId, organizationId);
+
+            // Return JSON indicating success and redirect URL
+            return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
+        }
+
         private void SetUserRole(string userId, int organizationId)
         {
             var userRole = _context.OrganizationRoles

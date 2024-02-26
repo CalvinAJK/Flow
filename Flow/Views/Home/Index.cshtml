@@ -1,4 +1,5 @@
-﻿@{
+﻿@model List<ApplicationUser>
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -11,4 +12,25 @@
         You are currently in organization:  @ViewBag.OrganizationId <br />
         Your role in this organization: @ViewBag.UserRole
     </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>User Name</th>
+                <th>Email</th>
+                <!-- Add more columns as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.UserName</td>
+                    <td>@user.Email</td>
+                    <!-- Add more cells for additional user properties -->
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>

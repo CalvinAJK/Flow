@@ -1,4 +1,5 @@
 using Flow.Data;
+using Flow.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,7 @@ builder.Services.AddDbContext<FlowContext>(options =>
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<FlowContext>();
+
 builder.Services.AddControllersWithViews();
 
 

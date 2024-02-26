@@ -1,5 +1,6 @@
 ﻿using Flow.Data;
 using Flow.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -19,7 +20,7 @@ namespace Flow.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             // Check if the user is logged in
             if (User.Identity.IsAuthenticated)
@@ -38,19 +39,50 @@ namespace Flow.Controllers
                     {
                         HttpContext.Session.SetInt32(SessionOrganizationId, firstOrganization.Id);
                         SetUserRole(userId, firstOrganization.Id);
+
+                        // Query the OrganizationRole entities to get all user IDs associated with the organization
+                        var userIdsInOrganization = _context.OrganizationRoles
+                            .Where(or => or.OrganizationId == firstOrganization.Id)
+                            .Select(or => or.UserId)
+                            .ToList();
+
+                        // Query the ApplicationUser entities to get the corresponding users based on the user IDs
+                        var usersInOrganization = await _context.Users
+                            .Where(u => userIdsInOrganization.Contains(u.Id))
+                            .ToListAsync();
+
+                        return View(usersInOrganization);
                     }
                 }
-                else
+                else if (organizationId != null) 
                 {
-                    // Retrieve the user's role based on the organization
-                    SetUserRole(userId, organizationId.Value);
+                    var selectedOrganization = _context.Organizations.FirstOrDefault(or => or.Id == organizationId);
+                    if (selectedOrganization != null)
+                    {
+                        // Retrieve the user's role based on the organization
+                        SetUserRole(userId, organizationId.Value);
+
+                        // Query the OrganizationRole entities to get all user IDs associated with the organization
+                        var userIdsInOrganization = await _context.OrganizationRoles
+                            .Where(or => or.OrganizationId == organizationId.Value)
+                            .Select(or => or.UserId)
+                            .ToListAsync();
+
+                        // Query the ApplicationUser entities to get the corresponding users based on the user IDs
+                        var usersInOrganization = await _context.Users
+                            .Where(u => userIdsInOrganization.Contains(u.Id))
+                            .ToListAsync();
+
+                        return View(usersInOrganization);
+                    }
                 }
+                
             }
             return View();
         }
 
         [HttpPost]
-        public IActionResult ChangeOrganization(int organizationId)
+        public async Task<IActionResult> ChangeOrganization(int organizationId)
         {
             // Update the session with the selected organization ID
             HttpContext.Session.SetInt32(SessionOrganizationId, organizationId);

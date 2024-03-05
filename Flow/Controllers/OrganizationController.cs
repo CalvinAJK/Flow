@@ -1,4 +1,5 @@
 ﻿using Flow.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,11 +21,19 @@ namespace Flow.Controllers
             return _context.Organizations.Any(e => e.Id == id);
         }
 
+        [Authorize]
         // GET: OrganizationController
         public ActionResult Index()
         {
-            var organizations = _context.Organizations.Where(o => o.IsDeleted == false).ToList();
-            return View(organizations);
+            // Retrieve the user ID of the currently logged-in user
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Retrieve the organizations that the user is in
+            var userOrganizations = _context.OrganizationRoles
+                .Where(or => or.UserId == userId && or.Organization.IsDeleted == false)
+                .Select(or => or.Organization)
+                .ToList();
+            return View(userOrganizations);
         }
 
         // GET: OrganizationController/Details/5

@@ -1,4 +1,5 @@
 ﻿using Flow.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,9 @@ namespace Flow.Controllers
         // GET: TeamController
         public ActionResult Index()
         {
-            var teams = _context.Teams.Where(o => o.IsDeleted == false).ToList();
+            var userOrgId = HttpContext.Session.GetInt32("OrganizationId");
+
+            var teams = _context.Teams.Where(o => o.OrganizationId == userOrgId && o.IsDeleted == false).ToList();
             return View(teams);
         }
 
@@ -36,16 +39,25 @@ namespace Flow.Controllers
         // GET: TeamController/Create
         public ActionResult Create()
         {
+            var userOrgId = HttpContext.Session.GetInt32("OrganizationId");
+            if (userOrgId == null)
+            {
+                TempData["ErrorMessage"] = "You must be in an organization first.";
+                return RedirectToAction(nameof(Index));
+            }
             return View();
         }
 
+        [Authorize]
         // POST: TeamController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,IsDeleted")] Team team)
+        public async Task<IActionResult> Create([Bind("Id,Name,isDeleted,OrganizationId")] Team team)
         {
             if (ModelState.IsValid)
             {
+                var userOrgId = HttpContext.Session.GetInt32("OrganizationId");
+                team.OrganizationId = userOrgId.Value;
                 _context.Add(team);
                 await _context.SaveChangesAsync();
 
@@ -54,7 +66,7 @@ namespace Flow.Controllers
                 {
                     TeamId = team.Id,
                     UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
-                    Role = "Admin"
+                    Role = "Leader"
                 };
                 _context.TeamRoles.Add(teamRole);
                 await _context.SaveChangesAsync();

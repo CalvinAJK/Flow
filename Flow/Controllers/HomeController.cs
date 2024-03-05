@@ -108,15 +108,18 @@ namespace Flow.Controllers
                 .Include(or => or.Organization)
                 .FirstOrDefault(or => or.UserId == userId && or.OrganizationId == organizationId);
 
+
             if (userRole != null)
             {
                 // Set the user's role in the session or claims
                 HttpContext.Session.SetInt32("OrganizationId", organizationId);
                 HttpContext.Session.SetString("UserRole", userRole.Role);
+                HttpContext.Session.SetString("OrganizationName", userRole.Organization.Name);
 
                 // Set the organization ID and user role in ViewBag to access them in the view
                 ViewBag.OrganizationId = organizationId;
                 ViewBag.UserRole = userRole.Role;
+                ViewBag.OrganizationName = userRole.Organization.Name;
             }
         }
 

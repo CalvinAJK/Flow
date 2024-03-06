@@ -14,7 +14,7 @@ namespace Flow.Data
         public DbSet<OrganizationRole> OrganizationRoles { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamRole> TeamRoles { get; set; }
-
+        public DbSet<Invitation> Invitations { get; set; }
 
     }
 }

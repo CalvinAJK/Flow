@@ -57,7 +57,9 @@
                     <td>
                         @if (item.InviterEmail == currentUserEmail && item.Status != "Revoked")
                         {
-                            <a asp-action="Revoke" asp-route-id="@item.Id">Revoke</a>
+                            <form asp-action="Revoke" asp-route-id="@item.Id" method="post">
+                                <button type="submit">Revoke</button>
+                            </form>
                         }
                         else if (item.InvitedEmail == currentUserEmail && item.Status == "Pending")
                         {

@@ -152,5 +152,51 @@ namespace Flow.Controllers
                 return View();
             }
         }
+
+        [Authorize]
+        // Revoke Invitation
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Revoke(int id)
+        {
+            var invitation = await _context.Invitations.FindAsync(id);
+            if (invitation != null)
+            {
+                invitation.Status = "Revoked";
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
+        }
+
+        [Authorize]
+        // Accept Invitation
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Accept(int id)
+        {
+            var invitation = await _context.Invitations.FindAsync(id);
+            if (invitation != null && invitation.Status == "Pending")
+            {
+                // Get the current user ID
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // Add the current user to the organization specified in the invitation
+                var organizationId = invitation.OrganizationId;
+
+                var organizationRole = new OrganizationRole
+                {
+                    OrganizationId = organizationId,
+                    UserId = currentUserId,
+                    Role = "Member" // Defaulted to Member role
+                };
+
+                _context.OrganizationRoles.Add(organizationRole);
+
+                // Update invitation status to Accepted
+                invitation.Status = "Accepted";
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

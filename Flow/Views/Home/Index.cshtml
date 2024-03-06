@@ -1,4 +1,5 @@
-﻿@model List<Microsoft.AspNetCore.Identity.IdentityUser>
+﻿@using Flow.Data
+@model List<Microsoft.AspNetCore.Identity.IdentityUser>
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -15,9 +16,9 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>User ID</th>
                     <th>User Name</th>
                     <th>Email</th>
+                    <th>Role</th>
                     <!-- Add more columns as needed -->
                 </tr>
             </thead>
@@ -25,9 +26,24 @@
                 @foreach (var user in Model)
                 {
                     <tr>
-                        <td>@user.Id</td>
                         <td>@user.UserName</td>
                         <td>@user.Email</td>
+                        <td>
+                            @{
+                                // Retrieve the user's role based on the organization
+                                var organizationRoles = ViewBag.OrganizationRoles as List<OrganizationRole>;
+                                var userRole = organizationRoles.FirstOrDefault(or => or.UserId == user.Id)?.Role;
+                                // Display the user's role if found
+                                if (!string.IsNullOrEmpty(userRole))
+                                {
+                                    <text>@userRole</text>
+                                }
+                                else
+                                {
+                                    <text>No role assigned</text>
+                                }
+                            }
+                        </td>
                         <!-- Add more cells for additional user properties -->
                     </tr>
                 }

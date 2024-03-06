@@ -56,6 +56,13 @@ namespace Flow.Controllers
                             .Where(u => userIdsInOrganization.Contains(u.Id))
                             .ToListAsync();
 
+                        // Retrieve the organization roles associated with the first organization
+                        var organizationRoles = await _context.OrganizationRoles
+                            .Where(or => or.OrganizationId == firstOrganization.Id)
+                            .ToListAsync();
+
+                        // Pass organizationRoles to the view along with usersInOrganization
+                        ViewBag.OrganizationRoles = organizationRoles;
                         return View(usersInOrganization);
                     }
                 }
@@ -78,6 +85,13 @@ namespace Flow.Controllers
                             .Where(u => userIdsInOrganization.Contains(u.Id))
                             .ToListAsync();
 
+                        // Retrieve the organization roles associated with the selected organization
+                        var organizationRoles = await _context.OrganizationRoles
+                            .Where(or => or.OrganizationId == organizationId.Value)
+                            .ToListAsync();
+
+                        // Pass organizationRoles to the view along with usersInOrganization
+                        ViewBag.OrganizationRoles = organizationRoles;
                         return View(usersInOrganization);
                     }
                 }

@@ -21,6 +21,7 @@ namespace Flow.Controllers
             return _context.Teams.Any(e => e.Id == id);
         }
 
+        [Authorize]
         // GET: TeamController
         public ActionResult Index()
         {

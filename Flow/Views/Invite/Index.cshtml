@@ -8,12 +8,12 @@
 }
 
 <h1>Index</h1>
+<p>
+    <a asp-action="Create">Invite</a>
+</p>
 
-@if (Model != null && Model.Any())
-{
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
+    <h2>Received Invites</h2>
+@if (Model.Any(item => item.InvitedEmail == currentUserEmail)){
     <table class="table">
         <thead>
             <tr>
@@ -36,34 +36,34 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var receivedInvite in Model.Where(item => item.InvitedEmail == currentUserEmail))
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.OrganizationName)
+                        @Html.DisplayFor(modelItem => receivedInvite.OrganizationName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.InviterEmail)
+                        @Html.DisplayFor(modelItem => receivedInvite.InviterEmail)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.InvitedEmail)
+                        @Html.DisplayFor(modelItem => receivedInvite.InvitedEmail)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Status)
+                        @Html.DisplayFor(modelItem => receivedInvite.Status)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.DateCreated)
+                        @Html.DisplayFor(modelItem => receivedInvite.DateCreated)
                     </td>
                     <td>
-                        @if (item.InviterEmail == currentUserEmail && item.Status != "Revoked")
+                        @if (receivedInvite.InviterEmail == currentUserEmail && receivedInvite.Status != "Revoked")
                         {
-                            <form asp-action="Revoke" asp-route-id="@item.Id" method="post">
+                            <form asp-action="Revoke" asp-route-id="@receivedInvite.Id" method="post">
                                 <button type="submit">Revoke</button>
                             </form>
                         }
-                        else if (item.InvitedEmail == currentUserEmail && item.Status == "Pending")
+                        else if (receivedInvite.InvitedEmail == currentUserEmail && receivedInvite.Status == "Pending")
                         {
-                            <a asp-action="Accept" asp-route-id="@item.Id">Accept</a>
+                            <a asp-action="Accept" asp-route-id="@receivedInvite.Id">Accept</a>
                         }
                     </td>
                 </tr>
@@ -73,5 +73,70 @@
 }
 else
 {
-    <p>You do not have any invites</p>
+    <p>No received invites</p>
 }
+
+    <h2>Sent invites</h2>
+@if (Model.Any(item => item.InviterEmail == currentUserEmail)){
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Organization Name
+                </th>
+                <th>
+                    Inviter Email
+                </th>
+                <th>
+                    Invited Email
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
+                    Date Created
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sentInvite in Model.Where(item => item.InviterEmail == currentUserEmail))
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => sentInvite.OrganizationName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => sentInvite.InviterEmail)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => sentInvite.InvitedEmail)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => sentInvite.Status)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => sentInvite.DateCreated)
+                    </td>
+                    <td>
+                        @if (sentInvite.InviterEmail == currentUserEmail && sentInvite.Status != "Revoked")
+                        {
+                            <form asp-action="Revoke" asp-route-id="@sentInvite.Id" method="post">
+                                <button type="submit">Revoke</button>
+                            </form>
+                        }
+                        else if (sentInvite.InvitedEmail == currentUserEmail && sentInvite.Status == "Pending")
+                        {
+                            <a asp-action="Accept" asp-route-id="@sentInvite.Id">Accept</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    }
+else
+{
+    <p>No sent invites</p>
+}
+

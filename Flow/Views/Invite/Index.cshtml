@@ -1,8 +1,10 @@
-﻿@model IEnumerable<EnrichedInvitation>
+﻿@using System.Security.Claims
+@model IEnumerable<EnrichedInvitation>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
 }
 
 <h1>Index</h1>
@@ -53,9 +55,14 @@
                         @Html.DisplayFor(modelItem => item.DateCreated)
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        @if (item.InviterEmail == currentUserEmail && item.Status != "Revoked")
+                        {
+                            <a asp-action="Revoke" asp-route-id="@item.Id">Revoke</a>
+                        }
+                        else if (item.InvitedEmail == currentUserEmail && item.Status == "Pending")
+                        {
+                            <a asp-action="Accept" asp-route-id="@item.Id">Accept</a>
+                        }
                     </td>
                 </tr>
             }

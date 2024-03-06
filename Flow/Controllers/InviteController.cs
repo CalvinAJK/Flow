@@ -1,6 +1,10 @@
 ﻿using Flow.Data;
+using Flow.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Flow.Controllers
@@ -14,6 +18,7 @@ namespace Flow.Controllers
             _context = context;
         }
 
+        [Authorize]
         // GET: InviteController
         public ActionResult Index()
         {
@@ -25,7 +30,19 @@ namespace Flow.Controllers
                 .Where(i => i.InviterId == userId || i.InvitedId == userId)
                 .OrderByDescending(i => i.DateCreated)
                 .ToList();
-            return View(invites);
+
+            // Enrich invitation data with organization names, inviter emails, invited emails, and formatted date
+            var enrichedInvites = invites.Select(invite => new EnrichedInvitation
+            {
+                Id = invite.Id,
+                OrganizationName = _context.Organizations.FirstOrDefault(o => o.Id == invite.OrganizationId)?.Name,
+                InviterEmail = _context.Users.FirstOrDefault(u => u.Id == invite.InviterId)?.Email,
+                InvitedEmail = _context.Users.FirstOrDefault(u => u.Id == invite.InvitedId)?.Email ?? invite.InvitedId,
+                Status = invite.Status,
+                DateCreated = invite.DateCreated
+            }).ToList();
+
+            return View(enrichedInvites);
         }
 
         // GET: InviteController/Details/5
@@ -34,26 +51,65 @@ namespace Flow.Controllers
             return View();
         }
 
+        [Authorize]
         // GET: InviteController/Create
         public ActionResult Create()
         {
+            // Get the current organization's ID (You need to implement this logic)
+            var userOrgId = HttpContext.Session.GetInt32("OrganizationId");
+            if (userOrgId == null)
+            {
+                TempData["ErrorMessage"] = "You must be in an organization first.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            string? OrgName = HttpContext.Session.GetString("OrganizationName");
+            ViewBag.OrganizationName = OrgName;
             return View();
         }
 
+        [Authorize]
         // POST: InviteController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(Invitation invitation)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                // Get the current organization's ID (You need to implement this logic)
+                var currentOrgId = HttpContext.Session.GetInt32("OrganizationId");
+
+                // Get the current user's ID
+                string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // Find the user ID based on the email input
+                var invitedUserId = await _context.Users
+                    .Where(u => u.Email == invitation.InvitedId)
+                    .Select(u => u.Id)
+                    .FirstOrDefaultAsync();
+
+                if (invitedUserId == null)
+                {
+                    invitedUserId = invitation.InvitedId;
+                }
+
+                // Set the inviter ID and organization ID
+                invitation.InviterId = currentUserId;
+                invitation.OrganizationId = currentOrgId.Value;
+
+                // Set the invited user's ID
+                invitation.InvitedId = invitedUserId;
+
+                // Add the invitation to the context and save changes
+                _context.Add(invitation);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Index");
             }
-            catch
-            {
-                return View();
-            }
+
+            return View(invitation);
         }
+
 
         // GET: InviteController/Edit/5
         public ActionResult Edit(int id)

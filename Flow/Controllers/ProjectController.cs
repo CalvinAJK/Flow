@@ -41,7 +41,11 @@ namespace Flow.Controllers
                     HttpContext.Session.SetInt32(SessionTeamId, firstTeam.Id);
                     SetUserTeamRole(userId, firstTeam.Id);
 
-                    return View();
+                    var projectInTeam = await _context.Projects
+                            .Where(p => p.TeamId == firstTeam.Id)
+                            .ToListAsync();
+
+                    return View(projectInTeam);
                 }
             }
             else if (teamId != null)
@@ -52,7 +56,17 @@ namespace Flow.Controllers
                     // Retrieve the user's role based on the organization
                     SetUserTeamRole(userId, teamId.Value);
 
-                    return View();
+                    var projectInTeam = await _context.Projects
+                            .Where(p => p.TeamId == teamId)
+                            .ToListAsync();
+
+                    // Retrieve the team role
+                    var projectRole = await _context.TeamRoles
+                        .Where(or => or.TeamId == teamId && or.UserId == userId)
+                        .ToListAsync();
+
+                    ViewBag.ProjectRoles = projectRole;
+                    return View(projectInTeam);
                 }
             }
 

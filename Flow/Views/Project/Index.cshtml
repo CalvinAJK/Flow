@@ -19,14 +19,13 @@
 {
 <p>
     You are currently in team:  @ViewBag.TeamName <br />
-    Your role in this team: @ViewBag.UserTeamRole
+        Your role in this team: @ViewBag.UserTeamRole
 </p>
     <table class="table">
         <thead>
             <tr>
                 <th>Project Name</th>
                 <th>Project Description</th>
-                <th>Role</th>
                 <!-- Add more columns as needed -->
             </tr>
         </thead>
@@ -36,23 +35,6 @@
                 <tr>
                     <td>@project.Name</td>
                     <td>@project.Description</td>
-                    @* <td>
-                        @{
-                            // Retrieve the user's role based on the organization
-                            var organizationRoles = ViewBag.OrganizationRoles as List<OrganizationRole>;
-                            var userRole = organizationRoles.FirstOrDefault(or => or.UserId == user.Id)?.Role;
-                            // Display the user's role if found
-                            if (!string.IsNullOrEmpty(userRole))
-                            {
-                                <text>@userRole</text>
-                            }
-                            else
-                            {
-                                <text>No role assigned</text>
-                            }
-                        }
-                    </td> *@
-                    <!-- Add more cells for additional user properties -->
                 </tr>
             }
         </tbody>

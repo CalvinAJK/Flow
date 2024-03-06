@@ -63,7 +63,9 @@
                         }
                         else if (receivedInvite.InvitedEmail == currentUserEmail && receivedInvite.Status == "Pending")
                         {
-                            <a asp-action="Accept" asp-route-id="@receivedInvite.Id">Accept</a>
+                            <form asp-action="Accept" asp-route-id="@receivedInvite.Id" method="post">
+                                <button type="submit">Accept</button>
+                            </form>
                         }
                     </td>
                 </tr>

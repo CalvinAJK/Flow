@@ -16,14 +16,16 @@ namespace Flow.Data
 
         public Priority Priority { get; set; }
 
+        public int? ProjectId { get; set; }
+
         // Navigation property for comments
-        public ICollection<Comment> Comments { get; set; }
+        public ICollection<Comment>? Comments { get; set; }
 
         // Navigation property for images
-        public ICollection<Image> Images { get; set; }
+        public ICollection<Image>? Images { get; set; }
 
-        // Navigation property for ProjectRole
-        public ICollection<ProjectRole> ProjectRoles { get; set; }
+        // Navigation property for Project
+        public Project? Project { get; set; }
     }
 
     public enum Priority

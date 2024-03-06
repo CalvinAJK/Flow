@@ -25,10 +25,22 @@ namespace Flow.Controllers
         // GET: TeamController
         public ActionResult Index()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userOrgId = HttpContext.Session.GetInt32("OrganizationId");
+            var userRole = HttpContext.Session.GetString("UserRole");
 
-            var teams = _context.Teams.Where(o => o.OrganizationId == userOrgId && o.IsDeleted == false).ToList();
-            return View(teams);
+            if (userRole == "Admin" || userRole == "Moderator")
+            {
+                var teams = _context.Teams.Where(o => o.OrganizationId == userOrgId && o.IsDeleted == false).ToList();
+                return View(teams);
+            }
+            else
+            {
+                var teams = _context.Teams.Where(o => o.OrganizationId == userOrgId && o.TeamRoles.Any(tr => tr.UserId == userId) && o.IsDeleted == false).ToList();
+                return View(teams);
+            }
+            
+            
         }
 
         // GET: TeamController/Details/5

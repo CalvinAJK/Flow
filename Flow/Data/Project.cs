@@ -14,13 +14,12 @@ namespace Flow.Data
 
         public string Description { get; set; }
 
-        [Required]
-        public int TeamId { get; set; }
+        public int? TeamId { get; set; }
 
         // Navigation property for Team
-        public Team Team { get; set; }
+        public Team? Team { get; set; }
 
         // Navigation property for ProjectRole
-        public ICollection<ProjectRole> ProjectRoles { get; set; }
+        public ICollection<ProjectRole>? ProjectRoles { get; set; }
     }
 }

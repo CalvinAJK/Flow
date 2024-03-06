@@ -166,7 +166,7 @@ namespace Flow.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TeamId")
+                    b.Property<int?>("TeamId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -184,25 +184,18 @@ namespace Flow.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("ProjectId")
+                    b.Property<int?>("ProjectId")
                         .HasColumnType("int");
 
                     b.Property<string>("Role")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TaskId")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
-
-                    b.HasIndex("TaskId");
 
                     b.ToTable("ProjectRoles");
                 });
@@ -226,7 +219,12 @@ namespace Flow.Data.Migrations
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Tasks");
                 });
@@ -517,9 +515,7 @@ namespace Flow.Data.Migrations
                 {
                     b.HasOne("Flow.Data.Team", "Team")
                         .WithMany()
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TeamId");
 
                     b.Navigation("Team");
                 });
@@ -528,13 +524,16 @@ namespace Flow.Data.Migrations
                 {
                     b.HasOne("Flow.Data.Project", "Project")
                         .WithMany("ProjectRoles")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProjectId");
 
-                    b.HasOne("Flow.Data.Task", null)
-                        .WithMany("ProjectRoles")
-                        .HasForeignKey("TaskId");
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("Flow.Data.Task", b =>
+                {
+                    b.HasOne("Flow.Data.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId");
 
                     b.Navigation("Project");
                 });
@@ -625,8 +624,6 @@ namespace Flow.Data.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Images");
-
-                    b.Navigation("ProjectRoles");
                 });
 
             modelBuilder.Entity("Flow.Data.Team", b =>

@@ -17,7 +17,7 @@ namespace Flow.Data
         public int TaskId { get; set; }
 
         // Navigation property for Task
-        public Task Task { get; set; }
+        public Task? Task { get; set; }
 
         // Foreign key property referencing the User
         public string UserId { get; set; }

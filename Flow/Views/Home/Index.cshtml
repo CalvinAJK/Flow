@@ -39,10 +39,10 @@
                             }
                             @if (ViewBag.UserRole == "Admin" && user.Id != User.FindFirstValue(ClaimTypes.NameIdentifier) && userRole != "Admin")
             {
-                <select class="form-control" onchange="changeUserRole('@user.Id', this.value)">
+                                <select class="block mx-auto w-2/5 py-1 px-2 rounded-md bg-gray-100 border border-gray-300 text-sm text-center" onchange="changeUserRole('@user.Id', this.value)">
                     <!option value="Member" @(userRole == "Member" ? "selected" : "")>Member</!option>
                     <!option value="Moderator" @(userRole == "Moderator" ? "selected" : "")>Moderator</!option>
-                    <!option value="Admin" @(userRole == "Admin" ? "selected" : "")>Admin</!option>
+                    @* <!option value="Admin" @(userRole == "Admin" ? "selected" : "")>Admin</!option> *@
                 </select>
             }
             else
@@ -78,3 +78,27 @@
     }
 
 </div>
+
+    <script>
+        function changeUserRole(userId, newRole) {
+            $.ajax({
+                url: '@Url.Action("ChangeUserRole", "Home")',
+                type: 'POST',
+                data: { userId: userId, newRole: newRole },
+                success: function (response) {
+                    if (response.success) {
+                        // Redirect to the home page after successful role change
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        // Handle error
+                        console.error('Error occurred while changing user role.');
+                    }
+                },
+                error: function () {
+                    // Handle error
+                    console.error('Error occurred while changing user role.');
+                }
+            });
+        }
+    </script>
+

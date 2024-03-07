@@ -137,6 +137,35 @@ namespace Flow.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ChangeUserRole(string userId, string newRole)
+        {
+            // Retrieve the current user's role
+            var currentUserRole = HttpContext.Session.GetString("UserRole");
+
+            // Check if the current user's role is "Admin" and the user being modified is not the current user
+            if (currentUserRole == "Admin" && userId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                // Retrieve the organization ID from the session
+                var organizationId = HttpContext.Session.GetInt32(SessionOrganizationId);
+
+                // Retrieve the organization role entry for the user
+                var organizationRole = await _context.OrganizationRoles.FirstOrDefaultAsync(or => or.UserId == userId && or.OrganizationId == organizationId);
+
+                if (organizationRole != null && (organizationRole.Role == "Member" || organizationRole.Role == "Moderator"))
+                {
+                    // Update the user's role
+                    organizationRole.Role = newRole;
+                    _context.OrganizationRoles.Update(organizationRole);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            // Redirect to the home page
+            return RedirectToAction("Index");
+        }
+
+
         public IActionResult Privacy()
         {
             return View();

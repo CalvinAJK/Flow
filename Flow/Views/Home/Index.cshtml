@@ -1,16 +1,19 @@
 ﻿@using Flow.Data
+@using System.Security.Claims
 @model List<Microsoft.AspNetCore.Identity.IdentityUser>
 @{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    
     @if (Model != null && Model.Any())
+
 {
+        <h1 class="display-4">@ViewBag.OrganizationName</h1>
         <!-- Display user's organization and role -->
         <p>
-            You are currently in organization:  @ViewBag.OrganizationName <br />
+            @* You are currently in organization:  @ViewBag.OrganizationName <br /> *@
             Your role in this organization: @ViewBag.UserRole
         </p>
         <table class="table">
@@ -33,6 +36,23 @@
                                 // Retrieve the user's role based on the organization
                                 var organizationRoles = ViewBag.OrganizationRoles as List<OrganizationRole>;
                                 var userRole = organizationRoles.FirstOrDefault(or => or.UserId == user.Id)?.Role;
+                            }
+                            @if (ViewBag.UserRole == "Admin" && user.Id != User.FindFirstValue(ClaimTypes.NameIdentifier) && userRole != "Admin")
+            {
+                <select class="form-control" onchange="changeUserRole('@user.Id', this.value)">
+                    <!option value="Member" @(userRole == "Member" ? "selected" : "")>Member</!option>
+                    <!option value="Moderator" @(userRole == "Moderator" ? "selected" : "")>Moderator</!option>
+                    <!option value="Admin" @(userRole == "Admin" ? "selected" : "")>Admin</!option>
+                </select>
+            }
+            else
+            {
+                @userRole
+            }
+                            @* @{
+                                // Retrieve the user's role based on the organization
+                                var organizationRoles = ViewBag.OrganizationRoles as List<OrganizationRole>;
+                                var userRole = organizationRoles.FirstOrDefault(or => or.UserId == user.Id)?.Role;
                                 // Display the user's role if found
                                 if (!string.IsNullOrEmpty(userRole))
                                 {
@@ -42,7 +62,7 @@
                                 {
                                     <text>No role assigned</text>
                                 }
-                            }
+                            } *@
                         </td>
                         <!-- Add more cells for additional user properties -->
                     </tr>
@@ -51,7 +71,9 @@
         </table>
     }
     else
+    
     {
+        <h1 class="display-4">Welcome</h1>
         <p>Create or join an organization!</p>
     }
 

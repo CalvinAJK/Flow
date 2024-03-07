@@ -44,9 +44,21 @@ namespace Flow.Controllers
         }
 
         // GET: TeamController/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            return View();
+            var team = await _context.Teams.FindAsync(id);
+            if (team == null)
+            {
+                return NotFound();
+            }
+
+            // Retrieve the list of users associated with the team using TeamRole
+            var teamUsers = await _context.TeamRoles
+                .Where(tr => tr.TeamId == id)
+                .ToListAsync();
+
+            ViewData["TeamName"] = team.Name;
+            return View(teamUsers);
         }
 
         // GET: TeamController/Create

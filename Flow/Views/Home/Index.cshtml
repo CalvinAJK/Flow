@@ -39,7 +39,7 @@
                             }
                             @if (ViewBag.UserRole == "Admin" && user.Id != User.FindFirstValue(ClaimTypes.NameIdentifier) && userRole != "Admin")
             {
-                                <select class="block mx-auto w-2/5 py-1 px-2 rounded-md bg-gray-100 border border-gray-300 text-sm text-center" onchange="changeUserRole('@user.Id', this.value)">
+                                <select class="block mx-auto rounded-md bg-gray-100 border border-gray-300 text-sm text-center" onchange="changeUserRole('@user.Id', this.value)">
                     <!option value="Member" @(userRole == "Member" ? "selected" : "")>Member</!option>
                     <!option value="Moderator" @(userRole == "Moderator" ? "selected" : "")>Moderator</!option>
                     @* <!option value="Admin" @(userRole == "Admin" ? "selected" : "")>Admin</!option> *@

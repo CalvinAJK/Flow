@@ -1,0 +1,9 @@
+﻿@model IEnumerable<Flow.Data.Task>
+
+<h2>Tasks:</h2>
+<ul>
+    @foreach (var task in Model)
+    {
+        <li>@task.Name - @task.Description</li>
+    }
+</ul>

@@ -197,5 +197,12 @@ namespace Flow.Controllers
                 ViewBag.TeamName = userRole.Team.Name;
             }
         }
+
+        public IActionResult GetTasks(int projectId)
+        {
+            var tasks = _context.Tasks.Where(t => t.ProjectId == projectId).ToList();
+            return PartialView("_TasksPartial", tasks);
+        }
+
     }
 }

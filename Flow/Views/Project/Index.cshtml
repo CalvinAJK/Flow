@@ -18,7 +18,7 @@
     @if (Model != null && Model.Any())
 {
 <p>
-    You are currently in team:  @ViewBag.TeamName <br />
+    @* You are currently in team:  @ViewBag.TeamName <br /> *@
         Your role in this team: @ViewBag.UserTeamRole
 </p>
     <table class="table">
@@ -33,8 +33,13 @@
             @foreach (var project in Model)
             {
                 <tr>
-                    <td>@project.Name</td>
+                    <td onclick="showTasks(@project.Id)">@project.Name</td>
                     <td>@project.Description</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div id="tasks_@project.Id" style="display: none;"></div>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -43,4 +48,24 @@
 else
 {
     <p>Create or join a project!</p>
+}
+
+@section scripts {
+    <script>
+        function showTasks(projectId) {
+            var tasksDiv = $("#tasks_" + projectId);
+            if (tasksDiv.is(":hidden")) {
+                $.ajax({
+                    url: '/Project/GetTasks/' + projectId,
+                    type: 'GET',
+                    success: function (data) {
+                        tasksDiv.html(data);
+                        tasksDiv.slideDown();
+                    }
+                });
+            } else {
+                tasksDiv.slideUp();
+            }
+        }
+    </script>
 }

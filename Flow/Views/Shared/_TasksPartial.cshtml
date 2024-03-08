@@ -1,9 +1,46 @@
 ﻿@model IEnumerable<Flow.Data.Task>
 
-<h2>Tasks:</h2>
-<ul>
-    @foreach (var task in Model)
-    {
-        <li>@task.Name - @task.Description</li>
-    }
-</ul>
+@if (Model != null && Model.Any())
+{
+    <h2>Tasks:</h2>
+    <ul>
+        @foreach (var task in Model)
+        {
+            <li>@task.Name - @task.Description</li>
+        }
+    </ul>
+}
+else
+{
+    <p>There are no existing tasks in this project yet.</p>
+}
+
+<div>
+    <button type="button" class="btn btn-primary" id="addTaskBtn">Add Task</button>
+</div>
+
+<!-- Task Creation Modal -->
+<div class="modal fade" id="taskModal" tabindex="-1" role="dialog" aria-labelledby="taskModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="taskModalLabel">Create a task for [Project Name]</h5>
+                <button type="button" class="close" id="hideTaskBtn" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Task Creation Form -->
+                <form id="taskForm">
+                    <!-- Task input fields go here -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="CloseBtn">Close</button>
+                <button type="button" class="btn btn-primary" id="saveTaskBtn">Save Task</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/site.js" asp-append-version="true"></script>

@@ -26,6 +26,7 @@
             <tr>
                 <th>Project Name</th>
                 <th>Project Description</th>
+                <th>Project Role</th>
                 <th>Add Task</th>
                 <!-- Add more columns as needed -->
             </tr>
@@ -36,6 +37,7 @@
                 <tr>
                     <td class="cursor-pointer" onclick="showTasks('@project.Id')">@project.Name</td>
                     <td>@project.Description</td>
+                    <td>ManagerNot</td>
                     <td>
                         <button type="button" class="btn btn-primary" onclick="openAddTaskModal(@project.Id)">Add Task</button>
                     </td>

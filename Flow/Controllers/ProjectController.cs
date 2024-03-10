@@ -62,22 +62,6 @@ namespace Flow.Controllers
                             .Where(p => p.TeamId == teamId)
                             .ToListAsync();
 
-                    // Retrieve the team role
-                    if (projectInTeam.Any()) // Check if there are any projects in the team
-                    {
-                        var projectIds = projectInTeam.Select(p => p.Id).ToList();
-
-                        var projectRoles = await _context.ProjectRoles
-                            .Where(or => projectIds.Contains((int)or.ProjectId) && or.UserId == userId)
-                            .ToListAsync();
-
-                        ViewBag.ProjectRoles = projectRoles;
-                    }
-                    else
-                    {
-                        ViewBag.ProjectRoles = new List<ProjectRole>(); // Empty list if no projects found
-                    }
-
                     return View(projectInTeam);
                 }
             }

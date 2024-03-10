@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Security.Claims;
 
 namespace Flow.Controllers
@@ -61,11 +63,21 @@ namespace Flow.Controllers
                             .ToListAsync();
 
                     // Retrieve the team role
-                    var projectRole = await _context.TeamRoles
-                        .Where(or => or.TeamId == teamId && or.UserId == userId)
-                        .ToListAsync();
+                    if (projectInTeam.Any()) // Check if there are any projects in the team
+                    {
+                        var projectIds = projectInTeam.Select(p => p.Id).ToList();
 
-                    ViewBag.ProjectRoles = projectRole;
+                        var projectRoles = await _context.ProjectRoles
+                            .Where(or => projectIds.Contains((int)or.ProjectId) && or.UserId == userId)
+                            .ToListAsync();
+
+                        ViewBag.ProjectRoles = projectRoles;
+                    }
+                    else
+                    {
+                        ViewBag.ProjectRoles = new List<ProjectRole>(); // Empty list if no projects found
+                    }
+
                     return View(projectInTeam);
                 }
             }
@@ -95,7 +107,7 @@ namespace Flow.Controllers
         // POST: ProjectController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Project project)
+        public async Task<IActionResult> Create(Data.Project project)
         {
             if (ModelState.IsValid)
             {
@@ -203,6 +215,41 @@ namespace Flow.Controllers
             var tasks = _context.Tasks.Where(t => t.ProjectId == projectId).ToList();
             return PartialView("_TasksPartial", tasks);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddTask(int projectId, string name, string description, string priority)
+        {
+            try
+            {
+                // Convert priority string to enum
+                    if (!Enum.TryParse<Priority>(priority, out Priority taskPriority))
+                {
+                    return Json(new { success = false, message = "Invalid task priority." });
+                }
+
+                // Create a new task object
+                var task = new Data.Task
+                {
+                    ProjectId = projectId,
+                    Name = name,
+                    Description = description,
+                    Priority = taskPriority
+                };
+
+                // Add the task to the database
+                _context.Tasks.Add(task);
+                await _context.SaveChangesAsync();
+
+                // Optionally, you can return a success response
+                return Json(new { success = true, message = "Task added successfully." });
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception and return an error response
+                return Json(new { success = false, message = "Error adding task: " + ex.Message });
+            }
+        }
+
 
     }
 }

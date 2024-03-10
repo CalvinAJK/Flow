@@ -26,6 +26,7 @@
             <tr>
                 <th>Project Name</th>
                 <th>Project Description</th>
+                <th>Add Task</th>
                 <!-- Add more columns as needed -->
             </tr>
         </thead>
@@ -33,13 +34,16 @@
             @foreach (var project in Model)
             {
                 <tr>
-                    <td onclick="showTasks(@project.Id)">@project.Name</td>
+                    <td class="cursor-pointer" onclick="showTasks('@project.Id')">@project.Name</td>
                     <td>@project.Description</td>
+                    <td>
+                        <button type="button" class="btn btn-primary" onclick="openAddTaskModal(@project.Id)">Add Task</button>
+                    </td>
                 </tr>
                 <tr>
-                    <td colspan="2">
+                    <td colspan="3">
                         <div id="tasks_@project.Id" style="display: none;"></div>
-                    </td>
+                    </td>              
                 </tr>
             }
         </tbody>
@@ -50,22 +54,130 @@ else
     <p>Create or join a project!</p>
 }
 
+<!-- Add Task Modal -->
+<div class="modal fade" id="addTaskModal" tabindex="-1" role="dialog" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTaskModalLabel">Add Task</h5>
+                <button type="button" class="close" onclick="closeModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Add Task Form -->
+                    <form id="addTaskForm">
+                        <input type="hidden" id="projectId" name="projectId" />
+                        <div class="form-group">
+                            <label for="taskName">Name:</label>
+                            <input type="text" class="form-control" id="taskName" name="taskName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskDescription">Description:</label>
+                            <textarea class="form-control" id="taskDescription" name="taskDescription" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskPriority">Priority:</label>
+                            <select class="form-control" id="taskPriority" name="taskPriority" required>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                        <input type="hidden" id="projectId" name="projectId" value=""> <!-- Hidden input for projectId -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+                <button type="button" class="btn btn-primary" onclick="addTask()">Save Task</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section scripts {
     <script>
         function showTasks(projectId) {
             var tasksDiv = $("#tasks_" + projectId);
             if (tasksDiv.is(":hidden")) {
                 $.ajax({
-                    url: '/Project/GetTasks/' + projectId,
+                    url: '/Project/GetTasks/',
                     type: 'GET',
+                    data: {
+                        projectId: projectId,
+                    },
                     success: function (data) {
                         tasksDiv.html(data);
                         tasksDiv.slideDown();
                     }
                 });
+                // Set the project ID in the hidden input field
+                $('#projectId').val(projectId); // This line sets the project ID in the hidden input field
             } else {
                 tasksDiv.slideUp();
             }
         }
+
+        function openAddTaskModal(projectId) {
+            $('#projectId').val(projectId);
+            $('#addTaskModal').modal('show');
+        }
+
+         function closeModal() {
+            $('#addTaskModal').modal('hide');
+        }
+
+        //function addTask() {
+        //    var taskName = $('#taskName').val();
+        //    var taskDescription = $('#taskDescription').val();
+        //    var taskPriority = $('#taskPriority').val();
+        //    var projectId = $('#projectId').val();
+
+        //    console.log(taskName);
+        //    console.log(taskDescription);
+        //    console.log(taskPriority);
+        //    console.log(projectId);
+
+            // Perform further processing...
+       // }
+
+        function addTask() {
+            var taskName = $('#taskName').val();
+            var taskDescription = $('#taskDescription').val();
+            var taskPriority = $('#taskPriority').val();
+            var projectId = $('#projectId').val();
+            // Perform client-side validation
+            if (!taskName || !taskPriority) {
+                // If the required fields are empty, display an error message and return
+                alert('Please fill in the required fields.');
+                return;
+            }
+
+            // Perform AJAX request to add task
+            $.ajax({
+                url: '/Project/AddTask',
+                type: 'POST',
+                data: {
+                    projectId: projectId,
+                    name: taskName,
+                    description: taskDescription,
+                    priority: taskPriority // Fixed missing comma and added missing priority key
+                },
+                success: function (data) {
+                    // Optionally handle success response
+                    // For example, refresh task list or show success message
+                    $('#addTaskModal').modal('hide');
+                    // Optionally reload tasks for the current project
+                    showTasks(projectId);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    // Optionally handle error response
+                    // For example, display error message to user
+                    console.error('Error adding task:', errorThrown);
+                    alert('Please fill in the fields');
+                }
+            });
+        }
+
     </script>
 }

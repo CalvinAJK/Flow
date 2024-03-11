@@ -1,28 +1,25 @@
-﻿@model List<Flow.Data.TeamRole>
-
-@{
+﻿@{
     ViewData["Title"] = "Details";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    var teamDetails = ViewData["TeamDetails"] as List<UserTeamRoleViewModel>;
 }
 
-<h1>Details</h1>
-<h1>Details for @ViewData["TeamName"]</h1>
+<h2>@ViewData["TeamName"] - Details</h2>
 
-@if (Model.Count > 0)
+@if (teamDetails != null && teamDetails.Count > 0)
 {
     <table class="table">
         <thead>
             <tr>
-                <th>User ID</th>
-                <th>User Role</th>
+                <th>Username</th>
+                <th>Role</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var teamUser in Model)
+            @foreach (var detail in teamDetails)
             {
                 <tr>
-                    <td>@teamUser.UserId</td>
-                    <td>@teamUser.Role</td>
+                    <td>@detail.Username</td>
+                    <td>@detail.Role</td>
                 </tr>
             }
         </tbody>
@@ -32,6 +29,3 @@ else
 {
     <p>No users found for this team.</p>
 }
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>

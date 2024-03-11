@@ -1,4 +1,5 @@
 ﻿using Flow.Data;
+using Flow.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -46,20 +47,27 @@ namespace Flow.Controllers
         // GET: TeamController/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var team = await _context.Teams.FindAsync(id);
+            var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == id);
             if (team == null)
             {
                 return NotFound();
             }
 
-            // Retrieve the list of users associated with the team using TeamRole
-            var teamUsers = await _context.TeamRoles
-                .Where(tr => tr.TeamId == id)
-                .ToListAsync();
+            var teamUsersRoles = await (from tr in _context.TeamRoles
+                                        join u in _context.Users on tr.UserId equals u.Id
+                                        where tr.TeamId == id
+                                        select new UserTeamRoleViewModel
+                                        {
+                                            Username = u.UserName, // Adjust this based on your User model
+                                            Role = tr.Role
+                                        }).ToListAsync();
 
             ViewData["TeamName"] = team.Name;
-            return View(teamUsers);
+            ViewData["TeamDetails"] = teamUsersRoles; // Pass the user-role details to the view
+            return View();
         }
+
+
 
         // GET: TeamController/Create
         public ActionResult Create()

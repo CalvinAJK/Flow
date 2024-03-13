@@ -10,7 +10,10 @@
     @if (Model != null && Model.Any())
 
 {
-        <h1 class="display-4">@ViewBag.OrganizationName</h1>
+        <h1 class="hometitleUI display-4 mx-auto text-center" data-text="@ViewBag.OrganizationName">
+            <span class="actual-text">&nbsp;@ViewBag.OrganizationName&nbsp;</span>
+            <span aria-hidden="true" class="home-hover-text">&nbsp;@ViewBag.OrganizationName&nbsp;</span>
+        </h1>
         <!-- Display user's organization and role -->
         <p>
             @* You are currently in organization:  @ViewBag.OrganizationName <br /> *@
@@ -101,4 +104,48 @@
             });
         }
     </script>
+
+    <style>
+    /* === removing default button style ===*/
+    .hometitleUI {
+        margin: 0;
+        height: auto;
+        background: transparent;
+        padding: 0;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* button styling */
+    .hometitleUI {
+        --border-right: 6px;
+        --text-stroke-color: rgba(0,0,0,0.4);
+        --animation-color: #e3882d;
+        letter-spacing: 3px;
+        text-decoration: none;
+        font-family: "Arial";
+        position: relative;
+        text-transform: uppercase;
+        color: transparent;
+        -webkit-text-stroke: 3px var(--text-stroke-color);
+    }
+    /* this is the text, when you hover on button */
+    .home-hover-text {
+        position: absolute;
+        box-sizing: border-box;
+        content: attr(data-text);
+        color: var(--animation-color);
+        width: 0%;
+        inset: 0;
+/*         border-right: var(--border-right) solid var(--animation-color); */
+        overflow: hidden;
+        transition: 0.5s;
+        -webkit-text-stroke: 1px var(--animation-color);
+    }
+    /* hover */
+    .hometitleUI:hover .home-hover-text {
+        width: 100%;
+        filter: drop-shadow(0 0 23px var(--animation-color))
+    }
+    </style>
 

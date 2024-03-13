@@ -16,6 +16,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<FlowContext>();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 
 
 // Add session support
@@ -49,13 +50,17 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
+
+
 // Use session
 app.UseSession();
 
+ 
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -63,5 +68,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
-
+app.MapHub<ChatHub>("/chatHub");
 app.Run();

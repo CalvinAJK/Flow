@@ -41,16 +41,31 @@
     });
 
     connection.start().then(function () {
+        // Replace 'organizationId' with the actual organization ID.
+        var organizationId = @Model.OrganizationId;
+        connection.invoke("JoinOrganizationGroup", organizationId)
+        .catch(function (err) {
+            return console.error(err.toString());
+        });
         document.getElementById("sendButton").disabled = false;
     }).catch(function (err) {
         console.error(err.toString());
     });
 
+
     document.getElementById("sendButton").addEventListener("click", function (event) {
+        var user = "@User.Identity.Name";
         var message = document.getElementById("messageInput").value;
-        connection.invoke("SendMessageToOrganization", "@User.Identity.Name", message, "@Model.OrganizationId").catch(function (err) {
-            console.error(err.toString());
-        });
+        var organizationId = @Model.OrganizationId;
+
+        console.log(user);
+        console.log(message);
+        console.log(organizationId);
+
+        connection.invoke("SendMessageToOrganization", user, message, organizationId)
+            .catch(function (err) {
+                console.error(err.toString());
+            });
         event.preventDefault();
     });
 

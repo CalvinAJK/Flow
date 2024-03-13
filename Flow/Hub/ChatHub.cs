@@ -15,6 +15,7 @@ public class ChatHub : Hub
     public async Task SendMessageToOrganization(string user, string message, int organizationId)
     {
         await Clients.Group($"Organization_{organizationId}").SendAsync("ReceiveMessage", user, message);
+        /*await Clients.All.SendAsync("ReceiveMessage", user, message);*/
     }
 
     public async Task SendMessageToTeam(string user, string message, int teamId)
@@ -22,7 +23,7 @@ public class ChatHub : Hub
         await Clients.Group($"Team_{teamId}").SendAsync("ReceiveMessage", user, message);
     }
 
-    public async Task JoinOrganization(int organizationId)
+    public async Task JoinOrganizationGroup(int organizationId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, $"Organization_{organizationId}");
     }

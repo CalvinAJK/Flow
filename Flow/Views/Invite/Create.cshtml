@@ -5,29 +5,33 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
 
-<h4>Invite user to @ViewBag.OrganizationName</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="InvitedId" class="control-label">Invite by Email</label>
-                <input asp-for="InvitedId" class="form-control" />
-                <span asp-validation-for="InvitedId" class="text-danger"></span>
+<form asp-action="Create">
+    <div class="space-y-12 sm:space-y-16">
+        <div>
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Invite new member to @ViewBag.OrganizationName</h2>
+            <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-600">Send an invitation to potential members to join @ViewBag.OrganizationName and start collaborating on projects together.</p>
+
+            <div class="mt-10 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
+                <div class="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
+                    <label for="invited" class="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5">Invite user by Email</label>
+                    <div class="mt-2 sm:col-span-2 sm:mt-0">
+                        <div class="sm:col-span-2 sm:mt-0">
+                            <input asp-for="InvitedId" type="email" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                            <span asp-validation-for="InvitedId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div class="mt-6 flex items-center gap-x-6">
+        <a asp-action="Index" class="text-sm font-semibold leading-6 text-gray-900">Cancel</a>
+        <button type="submit" value="Create" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Invite</button>
+    </div>
+</form>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

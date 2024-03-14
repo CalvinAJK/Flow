@@ -24,9 +24,12 @@
                 <h1 class="text-base font-semibold leading-6 text-gray-900">Members</h1>
                 <p class="mt-2 text-sm text-gray-700">A list of all the members in the organization including their name, email and role.</p>
             </div>
-            <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                <a asp-controller="Invite" asp-action="Create" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Invite user</a>
-            </div>
+            @if (ViewBag.UserRole == "Admin" || ViewBag.UserRole == "Moderator")
+            {
+                <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                    <a asp-controller="Invite" asp-action="Create" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Invite user</a>
+                </div>
+            }
         </div>
         <div class="mt-8 flow-root">
             <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -42,10 +45,10 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
+                        <tbody >
                             @foreach (var user in Model)
                             {
-                                <tr>
+                                <tr class="border-b border-gray-200 border-solid">
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">@user.UserName</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">@user.Email</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
@@ -56,7 +59,7 @@
                                         }
                                         @if (ViewBag.UserRole == "Admin" && user.Id != User.FindFirstValue(ClaimTypes.NameIdentifier) && userRole != "Admin")
                                         {
-                                            <select class="block mx-auto rounded-md bg-gray-100 border border-gray-300 text-sm text-center" onchange="changeUserRole('@user.Id', this.value)">
+                                            <select class=" mx-auto rounded-md bg-gray-100 border border-gray-300 text-sm text-center" onchange="changeUserRole('@user.Id', this.value)">
                                                 <!option value="Member" @(userRole == "Member" ? "selected" : "")>Member</!option>
                                                 <!option value="Moderator" @(userRole == "Moderator" ? "selected" : "")>Moderator</!option>
                                                 @* <!option value="Admin" @(userRole == "Admin" ? "selected" : "")>Admin</!option> *@

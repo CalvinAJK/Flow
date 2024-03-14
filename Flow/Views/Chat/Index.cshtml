@@ -3,19 +3,68 @@
     ViewData["Title"] = "Chat";
 }
 
-<h2>@ViewData["Title"]</h2>
-<h3>Organization Chat</h3>
+<h1 class="font-semibold pl-16 text-2xl">@ViewBag.OrganizationName Chat</h1>
 
 <!-- SignalR scripts -->
 <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-<div id="organizationChat">
+
+@* <div id="organizationChat">
     <div id="messagesList"></div>
     <input type="text" id="messageInput" />
     <button id="sendButton">Send</button>
+</div> *@
+
+<div class="pl-16 pr-4 mt-4">
+    <div id="messagesList" class="flex flex-col-reverse overflow-y-auto mt-4 hidden" style="max-height: 70vh;">
+        <!-- Messages will be dynamically added here -->
+        <!-- Placeholder for username tooltip -->
+        <div id="usernameTooltip" class="hidden absolute bg-white shadow-lg p-2 rounded"></div>
+
+
+    </div>
+
+    <div class="chat-input-bar flex flex-row items-center h-16 rounded-xl fixed bottom-6 left-0 right-0 px-4 py-4 bg-white shadow-lg w-5/6 max-w-screen-fit">
+        <div>
+            <button class="flex items-center justify-center text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="flex-grow ml-4">
+            <div class="relative w-full">
+                <input type="text" id="messageInput" class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10">
+                <button class="absolute flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="ml-4">
+            <button id="sendButton" class="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0">
+                <span>Send</span>
+                <span class="ml-2">
+                    <svg class="w-4 h-4 transform rotate-45 -mt-px" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </span>
+            </button>
+        </div>
+    </div>
+
+
 </div>
 
-@if (Model.Teams.Any())
+        
+
+
+
+
+
+@* @if (Model.Teams.Any())
 {
     <h3>Teams</h3>
     <ul>
@@ -24,7 +73,7 @@
             <li><a href="javascript:void(0)" class="team-chat" data-team-id="@team.Id">@team.Name</a></li>
         }
     </ul>
-}
+} *@
 
 <script>
     var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
@@ -32,25 +81,99 @@
     // Disable the send button until connection is established.
     document.getElementById("sendButton").disabled = true;
 
-    connection.on("ReceiveMessage", function (user, message) {
-        var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        var encodedMsg = user + ": " + msg;
-        var li = document.createElement("li");
-        li.textContent = encodedMsg;
-        document.getElementById("messagesList").appendChild(li);
-    });
-
     connection.start().then(function () {
         // Replace 'organizationId' with the actual organization ID.
         var organizationId = @Model.OrganizationId;
         connection.invoke("JoinOrganizationGroup", organizationId)
-        .catch(function (err) {
-            return console.error(err.toString());
-        });
+            .catch(function (err) {
+                return console.error(err.toString());
+            });
+        document.getElementById("messagesList").classList.remove("hidden"); // Show the messages list
         document.getElementById("sendButton").disabled = false;
     }).catch(function (err) {
         console.error(err.toString());
     });
+
+
+
+    connection.on("ReceiveMessage", function (user, message) {
+        // Example condition to check if the message is from the current user
+        var isCurrentUser = user === "@User.Identity.Name"; // Adapt this to ensure proper comparison
+
+        // Create the container for the message
+        var messageContainer = document.createElement("div");
+        messageContainer.className = `col-start-1 col-end-8 p-3 rounded-lg`;
+
+        // Create the flex container
+        var flexContainer = document.createElement("div");
+        flexContainer.className = `flex flex-row items-center ${isCurrentUser ? "justify-end" : ""}`;
+
+        // Create the avatar div
+        var avatarDiv = document.createElement("div");
+        avatarDiv.className = "flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0";
+        avatarDiv.textContent = user.charAt(0); // First letter of the username
+
+        // Tooltip div
+        var tooltipDiv = document.createElement("div");
+        tooltipDiv.className = "absolute bg-slate-300 text-black text-xs rounded py-1 px-2 mb-14 opacity-0 invisible tooltip-class";
+        tooltipDiv.textContent = user; // Set username in tooltip
+        avatarDiv.appendChild(tooltipDiv); // Append tooltip to avatar div
+
+        // Ensure the avatarDiv is within the scope of where you're adding the event listener
+        avatarDiv.addEventListener("click", function () {
+            tooltipDiv.classList.remove("invisible", "opacity-0"); // Tailwind
+            tooltipDiv.classList.add("opacity-100"); // Tailwind
+            event.stopPropagation(); // Prevent click from bubbling to document
+        });
+
+        document.addEventListener("click", function (event) {
+            var tooltipDivs = document.querySelectorAll('.tooltip-class');
+            tooltipDivs.forEach(function (tooltip) {
+                tooltip.classList.remove("opacity-100"); // Tailwind
+                tooltip.classList.add("opacity-0"); // Tailwind
+                // For custom CSS:
+                // tooltip.style.opacity = "0";
+                setTimeout(() => {
+                    tooltip.classList.add("invisible"); // Make it invisible after the transition
+                    // For custom CSS:
+                    // tooltip.style.visibility = "hidden";
+                }, 300); // Match the duration of the transition
+            });
+        });
+
+
+
+        // Create the message bubble
+        var messageDiv = document.createElement("div");
+        messageDiv.className = "relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl";
+        var messageContent = document.createElement("div");
+        messageContent.textContent = message;
+        messageDiv.appendChild(messageContent);
+
+        // Assemble the components based on the sender
+        if (isCurrentUser) {
+            // For the current user, you might want to adjust the order or styling
+            flexContainer.appendChild(avatarDiv);
+            flexContainer.appendChild(messageDiv);
+            // Optionally skip adding the avatar for the current user's messages
+        } else {
+            // For other users
+            flexContainer.appendChild(avatarDiv);
+            flexContainer.appendChild(messageDiv);
+        }
+
+        // Assemble the components
+        
+        messageContainer.appendChild(flexContainer);
+
+
+        // Append the constructed message to the messages list
+        document.getElementById("messagesList").appendChild(messageContainer);
+        // Scroll to the bottom of the messages list
+        var messagesList = document.getElementById("messagesList");
+        messagesList.scrollTop = messagesList.scrollHeight;
+    });
+
 
 
     document.getElementById("sendButton").addEventListener("click", function (event) {
@@ -58,16 +181,27 @@
         var message = document.getElementById("messageInput").value;
         var organizationId = @Model.OrganizationId;
 
-        console.log(user);
-        console.log(message);
-        console.log(organizationId);
-
+        if (message.trim() !== "") {
         connection.invoke("SendMessageToOrganization", user, message, organizationId)
             .catch(function (err) {
                 console.error(err.toString());
             });
+            messageInput.value = '';
+        }
+        // After sending a message, also scroll to the bottom
+        var messagesList = document.getElementById("messagesList");
+        setTimeout(() => { messagesList.scrollTop = messagesList.scrollHeight; }, 100); // Wait for the message to be added
         event.preventDefault();
     });
+
+    // Add Enter key functionality
+    document.getElementById("messageInput").addEventListener("keydown", function (event) {
+        if (event.key === "Enter" && !event.shiftKey) { // Check if Enter is pressed without the Shift key
+            event.preventDefault(); // Prevent default to stop from inserting a newline
+            document.getElementById("sendButton").click(); // Trigger the send button click
+        }
+    });
+
 
     document.querySelectorAll('.team-chat').forEach(item => {
         item.addEventListener('click', event => {
@@ -79,4 +213,29 @@
             });
         });
     });
+
 </script>
+
+            <style>
+    .tooltip-class {
+        transition: opacity 0.3s ease-in-out;
+        z-index: 100;
+
+    }
+
+    @@media (max-width: 640px) { /* Tailwind's default breakpoint for 'sm' */
+    .chat-input-bar {
+            transform: translateX(-50%);
+            left: 50%;
+    }
+}
+
+/* For larger screens, you might not need to change anything, but if you do: */
+@@media (min-width: 641px) {
+    .chat-input-bar {
+            transform: translateX(-50%);
+            left: 57.5%;
+    }
+}
+
+            </style>

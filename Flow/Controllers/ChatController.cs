@@ -1,5 +1,6 @@
 ﻿using Flow.Data;
 using Flow.Models;
+using Flow.Views.ViewComponents;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,11 +24,18 @@ namespace Flow.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var organizationId = _httpContextAccessor.HttpContext.Session.GetInt32("_OrganizationId");
+            string organizationName = null; // Default to null if not found
 
             if (organizationId == null)
             {
                 return RedirectToAction("Index", "Home"); // Redirect if no organization is selected.
+               
             }
+            // Query the database to get the organization name
+            var organization = await _context.Organizations
+                .Where(o => o.Id == organizationId.Value)
+                .Select(o => new { o.Name }) // Project to anonymous type with only the Name
+                .FirstOrDefaultAsync();
 
             var teams = await _context.TeamRoles
                 .Include(tr => tr.Team)
@@ -42,6 +50,8 @@ namespace Flow.Controllers
                 Teams = teams
             };
 
+            organizationName = organization.Name;
+            ViewBag.OrganizationName = organizationName;
             return View(chatViewModel);
         }
 

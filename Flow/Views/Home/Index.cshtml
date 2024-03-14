@@ -5,77 +5,85 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
+
     
     @if (Model != null && Model.Any())
 
 {
-        <h1 class="hometitleUI display-4 mx-auto text-center" data-text="@ViewBag.OrganizationName">
-            <span class="actual-text">&nbsp;@ViewBag.OrganizationName&nbsp;</span>
-            <span aria-hidden="true" class="home-hover-text">&nbsp;@ViewBag.OrganizationName&nbsp;</span>
-        </h1>
-        <!-- Display user's organization and role -->
-        <p>
-            @* You are currently in organization:  @ViewBag.OrganizationName <br /> *@
-            Your role in this organization: @ViewBag.UserRole
-        </p>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>User Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <!-- Add more columns as needed -->
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in Model)
-                {
-                    <tr>
-                        <td>@user.UserName</td>
-                        <td>@user.Email</td>
-                        <td>
-                            @{
-                                // Retrieve the user's role based on the organization
-                                var organizationRoles = ViewBag.OrganizationRoles as List<OrganizationRole>;
-                                var userRole = organizationRoles.FirstOrDefault(or => or.UserId == user.Id)?.Role;
+    <h1 class="hometitleUI display-4 mx-auto text-center" data-text="@ViewBag.OrganizationName">
+        <span class="actual-text">&nbsp;@ViewBag.OrganizationName&nbsp;</span>
+        <span aria-hidden="true" class="home-hover-text">&nbsp;@ViewBag.OrganizationName&nbsp;</span>
+    </h1>
+@*     <p>
+        You are currently in organization:  @ViewBag.OrganizationName <br />
+        Your role in this organization: @ViewBag.UserRole
+    </p> *@
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="sm:flex sm:items-center">
+            <div class="sm:flex-auto">
+                <h1 class="text-base font-semibold leading-6 text-gray-900">Members</h1>
+                <p class="mt-2 text-sm text-gray-700">A list of all the members in the organization including their name, email and role.</p>
+            </div>
+            <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                <a asp-controller="Invite" asp-action="Create" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Invite user</a>
+            </div>
+        </div>
+        <div class="mt-8 flow-root">
+            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">User Name</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Email</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role</th>
+                                <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
+                                    Kick
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            @foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">@user.UserName</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">@user.Email</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                        @{
+                                            // Retrieve the user's role based on the organization
+                                            var organizationRoles = ViewBag.OrganizationRoles as List<OrganizationRole>;
+                                            var userRole = organizationRoles.FirstOrDefault(or => or.UserId == user.Id)?.Role;
+                                        }
+                                        @if (ViewBag.UserRole == "Admin" && user.Id != User.FindFirstValue(ClaimTypes.NameIdentifier) && userRole != "Admin")
+                                        {
+                                            <select class="block mx-auto rounded-md bg-gray-100 border border-gray-300 text-sm text-center" onchange="changeUserRole('@user.Id', this.value)">
+                                                <!option value="Member" @(userRole == "Member" ? "selected" : "")>Member</!option>
+                                                <!option value="Moderator" @(userRole == "Moderator" ? "selected" : "")>Moderator</!option>
+                                                @* <!option value="Admin" @(userRole == "Admin" ? "selected" : "")>Admin</!option> *@
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            @userRole
+                                        }
+                                    </td>
+                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                        @* <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">, Lindsay Walton</span></a> *@
+                                    </td>
+                                </tr>
                             }
-                            @if (ViewBag.UserRole == "Admin" && user.Id != User.FindFirstValue(ClaimTypes.NameIdentifier) && userRole != "Admin")
-            {
-                                <select class="block mx-auto rounded-md bg-gray-100 border border-gray-300 text-sm text-center" onchange="changeUserRole('@user.Id', this.value)">
-                    <!option value="Member" @(userRole == "Member" ? "selected" : "")>Member</!option>
-                    <!option value="Moderator" @(userRole == "Moderator" ? "selected" : "")>Moderator</!option>
-                    @* <!option value="Admin" @(userRole == "Admin" ? "selected" : "")>Admin</!option> *@
-                </select>
-            }
-            else
-            {
-                @userRole
-            }
-                            @* @{
-                                // Retrieve the user's role based on the organization
-                                var organizationRoles = ViewBag.OrganizationRoles as List<OrganizationRole>;
-                                var userRole = organizationRoles.FirstOrDefault(or => or.UserId == user.Id)?.Role;
-                                // Display the user's role if found
-                                if (!string.IsNullOrEmpty(userRole))
-                                {
-                                    <text>@userRole</text>
-                                }
-                                else
-                                {
-                                    <text>No role assigned</text>
-                                }
-                            } *@
-                        </td>
-                        <!-- Add more cells for additional user properties -->
-                    </tr>
-                }
-            </tbody>
-        </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     }
     else
     
     {
+    <div class="text-center">
         <div class="relative isolate px-6 pt-14 lg:px-8">
             <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
                 <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
@@ -118,9 +126,10 @@
                 <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
             </div> *@
         </div>
+        </div>
     }
 
-</div>
+
 
     <script>
         function changeUserRole(userId, newRole) {

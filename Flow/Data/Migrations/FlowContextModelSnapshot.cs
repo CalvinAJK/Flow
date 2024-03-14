@@ -48,7 +48,7 @@ namespace Flow.Data.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("Flow.Data.Image", b =>
@@ -70,7 +70,7 @@ namespace Flow.Data.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("Flow.Data.Invitation", b =>
@@ -99,7 +99,7 @@ namespace Flow.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Invitations");
+                    b.ToTable("Invitations", (string)null);
                 });
 
             modelBuilder.Entity("Flow.Data.Organization", b =>
@@ -123,7 +123,7 @@ namespace Flow.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organizations");
+                    b.ToTable("Organizations", (string)null);
                 });
 
             modelBuilder.Entity("Flow.Data.OrganizationRole", b =>
@@ -147,7 +147,7 @@ namespace Flow.Data.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("OrganizationRoles");
+                    b.ToTable("OrganizationRoles", (string)null);
                 });
 
             modelBuilder.Entity("Flow.Data.Project", b =>
@@ -173,7 +173,7 @@ namespace Flow.Data.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("Flow.Data.ProjectRole", b =>
@@ -197,7 +197,7 @@ namespace Flow.Data.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectRoles");
+                    b.ToTable("ProjectRoles", (string)null);
                 });
 
             modelBuilder.Entity("Flow.Data.Task", b =>
@@ -225,7 +225,7 @@ namespace Flow.Data.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Tasks", (string)null);
                 });
 
             modelBuilder.Entity("Flow.Data.Team", b =>
@@ -250,7 +250,7 @@ namespace Flow.Data.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Teams", (string)null);
                 });
 
             modelBuilder.Entity("Flow.Data.TeamRole", b =>
@@ -274,7 +274,7 @@ namespace Flow.Data.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("TeamRoles");
+                    b.ToTable("TeamRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

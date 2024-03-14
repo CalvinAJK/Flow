@@ -148,6 +148,10 @@ namespace Flow.Controllers
         [HttpPost]
         public async Task<IActionResult> ChangeUserRole(string userId, string newRole)
         {
+
+            // Initialize a default response object
+            var response = new { success = false, message = "Unauthorized operation." };
+
             // Retrieve the current user's role
             var currentUserRole = HttpContext.Session.GetString("UserRole");
 
@@ -166,7 +170,17 @@ namespace Flow.Controllers
                     organizationRole.Role = newRole;
                     _context.OrganizationRoles.Update(organizationRole);
                     await _context.SaveChangesAsync();
+
+                    // Update response object to indicate success
+                    response = new { success = true, message = "User role updated successfully." };
                 }
+                else
+                {
+                    // Update response object to indicate failure if role is not allowed to be changed
+                    response = new { success = false, message = "Role update not allowed." };
+                }
+                // Return the response as JSON
+                return Json(response);
             }
 
             // Redirect to the home page

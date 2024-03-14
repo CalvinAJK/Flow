@@ -68,6 +68,7 @@
                                                 <!option value="Moderator" @(userRoleName == "Moderator" ? "selected" : "")>Moderator</!option>
                                                 @* <!option value="Admin" @(userRole == "Admin" ? "selected" : "")>Admin</!option> *@
                                             </select>
+                                            <span class="status-icon"></span>
                                         }
                                         else
                                         {
@@ -143,15 +144,28 @@
 
 
     <script>
-        function changeUserRole(userId, newRole) {
+    function changeUserRole(userId, newRole) {
+
+        // Trigger loading animation
+        const statusIcon = event.target.nextElementSibling;
+        statusIcon.innerHTML = '<div class="loading-circle"></div>'; // Add a loading circle div
+
+
             $.ajax({
                 url: '@Url.Action("ChangeUserRole", "Home")',
                 type: 'POST',
                 data: { userId: userId, newRole: newRole },
                 success: function (response) {
                     if (response.success) {
-                        // Redirect to the home page after successful role change
-                        window.location.href = response.redirectUrl;
+                    // After 1 second, replace the circle with a green tick
+                    setTimeout(() => {
+                        statusIcon.innerHTML = '<div class="checkmark">✔</div>';
+                        // Make the checkmark disappear after 4 seconds from its appearance
+                        setTimeout(() => {
+                            statusIcon.innerHTML = ''; // Clear the content, making the checkmark disappear
+                        }, 3000); // Wait an additional 3 seconds (total 4 seconds since the checkmark appeared)
+                    }, 1000);
+
                     } else {
                         // Handle error
                         console.error('Error occurred while changing user role.');
@@ -488,5 +502,28 @@
     transform: rotate(-1turn);
   }
 }
+
+.loading-circle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 2px solid rgba(0, 128, 0, 0.2);
+    border-radius: 50%;
+    border-top-color: #008000;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.checkmark {
+    display: inline-block;
+        width: 10px;
+        height: 10px;
+    color: #008000; /* Green */
+    font-size: 14px;
+}
+
     </style>
 

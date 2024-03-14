@@ -6,6 +6,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Flow.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,12 +15,12 @@ namespace Flow.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public IndexModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -29,7 +30,7 @@ namespace Flow.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        public string Username { get; set; }
+        public string DisplayName { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -57,24 +58,25 @@ namespace Flow.Areas.Identity.Pages.Account.Manage
             /// </summary>
 
             [Required]
-            [Display(Name = "Username")]
-            public string Username { get; set; }
+            [StringLength(20, MinimumLength = 5, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.")]
+            public string DisplayName { get; set; }
 
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
         }
 
-        private async Task LoadAsync(IdentityUser user)
+        private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
+            var displayName = user?.DisplayName ?? "Fallback DisplayName";
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             /*Username = userName;*/
 
             Input = new InputModel
             {
-                Username = userName, // Set the current username
+                DisplayName = displayName, // Set the current username
                 PhoneNumber = phoneNumber
                 
             };
@@ -107,10 +109,12 @@ namespace Flow.Areas.Identity.Pages.Account.Manage
             }
 
             // Handle username update
-            var userName = await _userManager.GetUserNameAsync(user);
+            var displayName = user?.DisplayName ?? "Fallback DisplayName";
 
-            if (Input.Username != userName)
+            if (Input.DisplayName != displayName)
             {
+                // Update the display name
+                user.DisplayName = Input.DisplayName;
                 // Optional: Check if the new username is already taken
                 /*var userWithSameUserName = await _userManager.FindByNameAsync(Input.Username);*/
                 /*if (userWithSameUserName != null && userWithSameUserName.Id != user.Id)
@@ -118,9 +122,9 @@ namespace Flow.Areas.Identity.Pages.Account.Manage
                     ModelState.AddModelError(string.Empty, "Username is already taken.");
                     return Page();
                 }*/
-
-                var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.Username);
-                if (!setUserNameResult.Succeeded)
+                // Save the changes in the user object
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set username.";
                     return RedirectToPage();

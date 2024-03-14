@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 
 namespace Flow.Data
 {
-    public class FlowContext : IdentityDbContext<IdentityUser>
+    public class FlowContext : IdentityDbContext<ApplicationUser>
     {
         public FlowContext(DbContextOptions<FlowContext> options) : base(options)
         {

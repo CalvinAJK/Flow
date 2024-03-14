@@ -12,7 +12,7 @@ builder.Services.AddDbContext<FlowContext>(options =>
     options.UseSqlServer(cs);
 });
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<FlowContext>();
 
 builder.Services.AddControllersWithViews();

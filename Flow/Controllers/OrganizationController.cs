@@ -42,6 +42,7 @@ namespace Flow.Controllers
             return View();
         }
 
+        [Authorize]
         // GET: OrganizationController/Create
         public ActionResult Create()
         {

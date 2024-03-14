@@ -1,6 +1,8 @@
 ﻿using Flow.Data;
+using Flow.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -10,10 +12,12 @@ namespace Flow.Controllers
     public class OrganizationController : Controller
     {
         private readonly FlowContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public OrganizationController(FlowContext context)
+        public OrganizationController(FlowContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         private bool OrganizationExists(int id)
@@ -143,5 +147,51 @@ namespace Flow.Controllers
                 return View();
             }
         }
+
+
+        // GET: OrganizationRoles/Kick/{id}
+        public async Task<IActionResult> Kick(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var organizationRole = await _context.OrganizationRoles
+                .Include(or => or.Organization) // Assuming Organization is a navigation property
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (organizationRole == null)
+            {
+                return NotFound();
+            }
+            // Retrieve the user based on UserId from the organization role
+            var user = await _userManager.FindByIdAsync(organizationRole.UserId.ToString());
+            if (user == null)
+            {
+                // Handle the case where the user is not found
+                return NotFound("User not found.");
+            }
+            ViewBag.UserName = user.UserName;
+            return View(organizationRole);
+        }
+
+        // POST: OrganizationRoles/Kick/{id}
+        [HttpPost, ActionName("Kick")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> KickConfirmed(int id)
+        {
+            var organizationRole = await _context.OrganizationRoles.FindAsync(id);
+            if (organizationRole != null)
+            {
+                _context.OrganizationRoles.Remove(organizationRole);
+                await _context.SaveChangesAsync();
+            }
+
+            // Redirect to Home/Index
+            return RedirectToAction("Index", "Home");
+        }
+
+
     }
 }

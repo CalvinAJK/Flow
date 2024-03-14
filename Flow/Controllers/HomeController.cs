@@ -31,6 +31,7 @@ namespace Flow.Controllers
                 // Check if the user has an existing organization selection in the session
                 var organizationId = HttpContext.Session.GetInt32(SessionOrganizationId);
 
+
                 // If the user doesn't have an existing organization selection, select the first organization from the database
                 if (organizationId == null)
                 {
@@ -66,34 +67,41 @@ namespace Flow.Controllers
                         return View(usersInOrganization);
                     }
                 }
-                else if (organizationId != null) 
+                else if (organizationId != null && organizationId.HasValue) 
                 {
-                    var selectedOrganization = _context.Organizations.FirstOrDefault(or => or.Id == organizationId);
-                    if (selectedOrganization != null)
+                    // Query the database to check if the OrganizationRole exists
+                    var organizationRoleExists = await _context.OrganizationRoles.AnyAsync(or =>
+                    or.OrganizationId == organizationId.Value && or.UserId == userId);
+                    if (organizationRoleExists)
                     {
-                        // Retrieve the user's role based on the organization
-                        SetUserRole(userId, organizationId.Value);
+                        var selectedOrganization = _context.Organizations.FirstOrDefault(or => or.Id == organizationId);
+                        if (selectedOrganization != null)
+                        {
+                            // Retrieve the user's role based on the organization
+                            SetUserRole(userId, organizationId.Value);
 
-                        // Query the OrganizationRole entities to get all user IDs associated with the organization
-                        var userIdsInOrganization = await _context.OrganizationRoles
-                            .Where(or => or.OrganizationId == organizationId.Value)
-                            .Select(or => or.UserId)
-                            .ToListAsync();
+                            // Query the OrganizationRole entities to get all user IDs associated with the organization
+                            var userIdsInOrganization = await _context.OrganizationRoles
+                                .Where(or => or.OrganizationId == organizationId.Value)
+                                .Select(or => or.UserId)
+                                .ToListAsync();
 
-                        // Query the ApplicationUser entities to get the corresponding users based on the user IDs
-                        var usersInOrganization = await _context.Users
-                            .Where(u => userIdsInOrganization.Contains(u.Id))
-                            .ToListAsync();
+                            // Query the ApplicationUser entities to get the corresponding users based on the user IDs
+                            var usersInOrganization = await _context.Users
+                                .Where(u => userIdsInOrganization.Contains(u.Id))
+                                .ToListAsync();
 
-                        // Retrieve the organization roles associated with the selected organization
-                        var organizationRoles = await _context.OrganizationRoles
-                            .Where(or => or.OrganizationId == organizationId.Value)
-                            .ToListAsync();
+                            // Retrieve the organization roles associated with the selected organization
+                            var organizationRoles = await _context.OrganizationRoles
+                                .Where(or => or.OrganizationId == organizationId.Value)
+                                .ToListAsync();
 
-                        // Pass organizationRoles to the view along with usersInOrganization
-                        ViewBag.OrganizationRoles = organizationRoles;
-                        return View(usersInOrganization);
+                            // Pass organizationRoles to the view along with usersInOrganization
+                            ViewBag.OrganizationRoles = organizationRoles;
+                            return View(usersInOrganization);
+                        }
                     }
+                    
                 }
                 
             }

@@ -54,24 +54,32 @@
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                         @{
                                             // Retrieve the user's role based on the organization
-                                            var organizationRoles = ViewBag.OrganizationRoles as List<OrganizationRole>;
-                                            var userRole = organizationRoles.FirstOrDefault(or => or.UserId == user.Id)?.Role;
+                                             var organizationRoles = ViewBag.OrganizationRoles as List<OrganizationRole>;
+                                            // var userRole = organizationRoles.FirstOrDefault(or => or.UserId == user.Id)?.Role;
+                                            var userOrganizationRole = organizationRoles.FirstOrDefault(or => or.UserId == user.Id);
+                                            var userRoleId = userOrganizationRole?.Id; // Now you have the Id
+                                            var userRoleName = userOrganizationRole?.Role; // This is how you get the role name, similar to your existing logic
+
                                         }
-                                        @if (ViewBag.UserRole == "Admin" && user.Id != User.FindFirstValue(ClaimTypes.NameIdentifier) && userRole != "Admin")
+                                        @if (ViewBag.UserRole == "Admin" && user.Id != User.FindFirstValue(ClaimTypes.NameIdentifier) && userRoleName != "Admin")
                                         {
                                             <select class=" mx-auto rounded-md bg-gray-100 border border-gray-300 text-sm text-center" onchange="changeUserRole('@user.Id', this.value)">
-                                                <!option value="Member" @(userRole == "Member" ? "selected" : "")>Member</!option>
-                                                <!option value="Moderator" @(userRole == "Moderator" ? "selected" : "")>Moderator</!option>
+                                                <!option value="Member" @(userRoleName == "Member" ? "selected" : "")>Member</!option>
+                                                <!option value="Moderator" @(userRoleName == "Moderator" ? "selected" : "")>Moderator</!option>
                                                 @* <!option value="Admin" @(userRole == "Admin" ? "selected" : "")>Admin</!option> *@
                                             </select>
                                         }
                                         else
                                         {
-                                            @userRole
+                                            @userRoleName
                                         }
                                     </td>
-                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium">
                                         @* <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">, Lindsay Walton</span></a> *@
+                                        @if ((ViewBag.UserRole == "Admin" || ViewBag.UserRole == "Moderator") && user.Id != User.FindFirstValue(ClaimTypes.NameIdentifier) && userRoleName != "Admin")
+                                        {
+                                            <a class="text-indigo-600 hover:text-indigo-900" asp-controller="Organization" asp-action="Kick" asp-route-id="@userRoleId">Kick</a>
+                                        }
                                     </td>
                                 </tr>
                             }

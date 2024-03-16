@@ -33,11 +33,13 @@ namespace Flow.Controllers
             if (userRole == "Admin" || userRole == "Moderator")
             {
                 var teams = _context.Teams.Where(o => o.OrganizationId == userOrgId && o.IsDeleted == false).ToList();
+                ViewBag.UserRole = userRole;
                 return View(teams);
             }
             else
             {
                 var teams = _context.Teams.Where(o => o.OrganizationId == userOrgId && o.TeamRoles.Any(tr => tr.UserId == userId) && o.IsDeleted == false).ToList();
+                ViewBag.UserRole = userRole;
                 return View(teams);
             }
             

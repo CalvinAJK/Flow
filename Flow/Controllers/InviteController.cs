@@ -24,6 +24,7 @@ namespace Flow.Controllers
         {
             // Retrieve the user ID of the currently logged-in user
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRole = HttpContext.Session.GetString("UserRole");
 
             // Retrieve invitations where userId matches either InviterId or InvitedId
             var invites = _context.Invitations
@@ -42,6 +43,7 @@ namespace Flow.Controllers
                 DateCreated = invite.DateCreated
             }).ToList();
 
+            ViewBag.UserRole = userRole;
             return View(enrichedInvites);
         }
 
@@ -91,6 +93,18 @@ namespace Flow.Controllers
                 if (invitedUserId == null)
                 {
                     invitedUserId = invitation.InvitedId;
+                }
+
+
+                // Check if the user is already part of the organization
+                var isUserAlreadyInOrganization = await _context.OrganizationRoles
+                    .AnyAsync(ou => ou.UserId == invitedUserId && ou.OrganizationId == currentOrgId);
+
+                if (isUserAlreadyInOrganization)
+                {
+                    // Add an error to the model state and return to the view
+                    ModelState.AddModelError("", "The user is already part of this organization.");
+                    return RedirectToAction("Create");
                 }
 
                 // Set the inviter ID and organization ID

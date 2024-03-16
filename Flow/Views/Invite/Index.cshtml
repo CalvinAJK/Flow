@@ -7,54 +7,35 @@
     var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
 }
 
-<h1>Index</h1>
-<p>
+@* <p>
     <a asp-action="Create">Invite</a>
-</p>
+</p> *@
 
-    <h2>Received Invites</h2>
-@if (Model.Any(item => item.InvitedEmail == currentUserEmail)){
-    <table class="table">
+
+
+<h1 class="font-semibold text-2xl">Received Invites</h1>
+@if (Model.Any(item => item.InvitedEmail == currentUserEmail)){ 
+    <table class="min-w-full divide-y divide-gray-300">
         <thead>
             <tr>
-                <th>
-                    Organization Name
-                </th>
-                <th>
-                    Inviter Email
-                </th>
-                <th>
-                    Invited Email
-                </th>
-                <th>
-                    Status
-                </th>
-                <th>
-                    Date Created
-                </th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Organization Name</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Inviter Email</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Invited Email</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date Created</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var receivedInvite in Model.Where(item => item.InvitedEmail == currentUserEmail))
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => receivedInvite.OrganizationName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => receivedInvite.InviterEmail)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => receivedInvite.InvitedEmail)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => receivedInvite.Status)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => receivedInvite.DateCreated)
-                    </td>
-                    <td>
+                <tr class="border-b border-gray-200 border-solid">
+                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">@Html.DisplayFor(modelItem => receivedInvite.OrganizationName)</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">@Html.DisplayFor(modelItem => receivedInvite.InviterEmail)</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">@Html.DisplayFor(modelItem => receivedInvite.InvitedEmail)</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">@Html.DisplayFor(modelItem => receivedInvite.Status)</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">@Html.DisplayFor(modelItem => receivedInvite.DateCreated)</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm">
                         @if (receivedInvite.InviterEmail == currentUserEmail && receivedInvite.Status != "Revoked")
                         {
                             <form asp-action="Revoke" asp-route-id="@receivedInvite.Id" method="post">
@@ -75,53 +56,52 @@
 }
 else
 {
-    <p>No received invites</p>
+    <div class="text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-semibold text-gray-900">No received invites</h3>
+        <p class="mt-1 text-sm text-gray-500">Request an invite to join an organization.</p>
+        <div class="mt-6">
+        </div>
+    </div>
 }
 
-    <h2>Sent invites</h2>
+
+<div class="sm:flex sm:items-center pt-16">
+    <div class="sm:flex-auto">
+        <h1 class="font-semibold text-2xl">Sent Invites</h1>
+    </div>
+    @if (ViewBag.UserRole == "Admin" || ViewBag.UserRole == "Moderator")
+    {
+        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <a asp-controller="Invite" asp-action="Create" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Invite user</a>
+        </div>
+    }
+</div>
 @if (Model.Any(item => item.InviterEmail == currentUserEmail)){
-    <table class="table">
+    <table class="min-w-full divide-y divide-gray-300">
         <thead>
             <tr>
-                <th>
-                    Organization Name
-                </th>
-                <th>
-                    Inviter Email
-                </th>
-                <th>
-                    Invited Email
-                </th>
-                <th>
-                    Status
-                </th>
-                <th>
-                    Date Created
-                </th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Organization Name</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Inviter Email</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Invited Email</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date Created</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var sentInvite in Model.Where(item => item.InviterEmail == currentUserEmail))
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => sentInvite.OrganizationName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => sentInvite.InviterEmail)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => sentInvite.InvitedEmail)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => sentInvite.Status)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => sentInvite.DateCreated)
-                    </td>
-                    <td>
-                        @if (sentInvite.InviterEmail == currentUserEmail && sentInvite.Status != "Revoked")
+                <tr class="border-b border-gray-200 border-solid">
+                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">@Html.DisplayFor(modelItem => sentInvite.OrganizationName)</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">@Html.DisplayFor(modelItem => sentInvite.InviterEmail)</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">@Html.DisplayFor(modelItem => sentInvite.InvitedEmail)</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">@Html.DisplayFor(modelItem => sentInvite.Status)</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">@Html.DisplayFor(modelItem => sentInvite.DateCreated)</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm">
+                        @if (sentInvite.InviterEmail == currentUserEmail && sentInvite.Status != "Revoked" && sentInvite.Status != "Accepted")
                         {
                             <form asp-action="Revoke" asp-route-id="@sentInvite.Id" method="post">
                                 <button type="submit">Revoke</button>
@@ -139,6 +119,14 @@ else
     }
 else
 {
-    <p>No sent invites</p>
+    <div class="text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-semibold text-gray-900">No sent invites</h3>
+        <p class="mt-1 text-sm text-gray-500">Send an invite to an existing user.</p>
+        <div class="mt-6">
+        </div>
+    </div>
 }
 

@@ -210,7 +210,8 @@ namespace Flow.Controllers
                 invitation.Status = "Accepted";
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Home");
+
         }
     }
 }

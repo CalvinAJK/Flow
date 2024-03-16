@@ -61,11 +61,31 @@ namespace Flow.Controllers
                                         select new UserTeamRoleViewModel
                                         {
                                             Username = u.UserName, // Adjust this based on your User model
+                                            UserId = u.Id,
                                             Role = tr.Role
                                         }).ToListAsync();
 
+            // Fetch organization users not in the current team
+            var userOrgId = HttpContext.Session.GetInt32("OrganizationId");
+            var allOrgUserIds = await _context.OrganizationRoles
+                                        .Where(or => or.OrganizationId == userOrgId)
+                                        .Select(or => or.UserId)
+                                        .ToListAsync();
+
+            var teamUserIds = teamUsersRoles.Select(u => u.UserId).ToList(); // Assuming UserTeamRoleViewModel has UserId
+            var availableUserIds = allOrgUserIds.Except(teamUserIds).ToList();
+
+            var availableUsers = await _context.Users
+                                    .Where(u => availableUserIds.Contains(u.Id))
+                                    .ToListAsync();
+
             ViewData["TeamName"] = team.Name;
             ViewData["TeamDetails"] = teamUsersRoles; // Pass the user-role details to the view
+
+            ViewData["AvailableUsers"] = availableUsers; // Pass the available users to the view
+
+            ViewData["TeamId"] = team.Id; 
+
             return View();
         }
 
@@ -197,5 +217,36 @@ namespace Flow.Controllers
                 return View();
             }
         }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddUserToTeam(int teamId, string userId)
+        {
+            // Validation to ensure the user is not already in the team, etc.
+            var existingTeamRole = await _context.TeamRoles
+                                            .AnyAsync(tr => tr.TeamId == teamId && tr.UserId == userId);
+            if (!existingTeamRole)
+            {
+                var teamRole = new TeamRole
+                {
+                    TeamId = teamId,
+                    UserId = userId,
+                    Role = "Member" // Assign a default role or vary based on your requirements
+                };
+                _context.TeamRoles.Add(teamRole);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "User added to team successfully.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "User is already in the team.";
+            }
+
+            return RedirectToAction(nameof(Details), new { id = teamId });
+        }
+
+
+
     }
 }

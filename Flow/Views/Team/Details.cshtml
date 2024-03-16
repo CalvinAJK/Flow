@@ -1,9 +1,29 @@
-﻿@{
+﻿@model List<ApplicationUser>
+
+@{
     ViewData["Title"] = "Details";
     var teamDetails = ViewData["TeamDetails"] as List<UserTeamRoleViewModel>;
 }
 
 <h1 class="font-semibold text-2xl">@ViewData["TeamName"]</h1>
+@if (ViewData["AvailableUsers"] is List<ApplicationUser> availableUsers && availableUsers.Count > 0)
+{
+    <form asp-action="AddUserToTeam" method="post" class="flex items-center space-x-2">
+        <select name="userId" class="mt-2 max-w-72 form-control block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <option value="">Add user to team</option>
+            @foreach (var user in availableUsers)
+            {
+                <option value="@user.Id">@user.UserName</option>
+            }
+        </select>
+        <input type="hidden" name="teamId" value="@ViewData["TeamId"]" />
+        <button type="submit" class="ml-4 mt-2 block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            Add
+        </button>
+    </form>
+}
+
+
 @if (teamDetails != null && teamDetails.Count > 0)
 {
     <table class="min-w-full divide-y divide-gray-300">

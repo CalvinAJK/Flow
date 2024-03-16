@@ -8,29 +8,26 @@
     @if (Model != null && Model.Any())
 
 {
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
+    <table class="min-w-full divide-y divide-gray-300">
+        <thead>
+            <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Team Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="border-b border-gray-200 border-solid">
+                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">@Html.DisplayFor(modelItem => item.Name)</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        <a class="text-indigo-600 hover:text-indigo-900" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a class="text-indigo-600 hover:text-indigo-900" asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a class="text-indigo-600 hover:text-indigo-900" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
     </table>
 }
 else

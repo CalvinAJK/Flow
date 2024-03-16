@@ -12,35 +12,38 @@
     @if (Model != null && Model.Any())
 
 {
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
+
+    <div class="sm:flex sm:items-center">
+        <div class="sm:flex-auto">
+            <h1 class="text-base font-semibold leading-6 text-gray-900">Organizations</h1>
+            <p class="mt-2 text-sm text-gray-700">A list of associated organizations.</p>
+        </div>
+            <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                <a asp-controller="Organization" asp-action="Create" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Create organization</a>
+            </div>
+    </div>
+    <table class="min-w-full divide-y divide-gray-300">
+        <thead>
+            <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Name</th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Description</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="border-b border-gray-200 border-solid">
+                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">@Html.DisplayFor(modelItem => item.Name)</td>
+                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">@Html.DisplayFor(modelItem => item.Description)</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+@*                         <a class="text-indigo-600 hover:text-indigo-900" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a class="text-indigo-600 hover:text-indigo-900" asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a class="text-indigo-600 hover:text-indigo-900" asp-action="Delete" asp-route-id="@item.Id">Delete</a> *@
+                    </td>
+                </tr>
+            }
+        </tbody>
     </table>
 }
 else

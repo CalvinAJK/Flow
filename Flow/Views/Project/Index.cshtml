@@ -10,45 +10,72 @@
 
     @if (Model != null && Model.Any())
 {
-    <ul role="list" class="-mx-2 space-y-1">
-        @await Component.InvokeAsync("UserHasExistingTeam", new { userId = userId })
-    </ul>
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-<p>
-    @* You are currently in team:  @ViewBag.TeamName <br /> *@
+    
+@* <p>
+    You are currently in team:  @ViewBag.TeamName <br />
         Your role in this team: @ViewBag.UserTeamRole
-</p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Project Name</th>
-                <th>Project Description</th>
-                <th>Project Role</th>
-                <th>Add Task</th>
-                <!-- Add more columns as needed -->
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var project in Model)
+</p> *@
+    <h1 class="hometitleUI display-4 mx-auto text-center" data-text="@ViewBag.TeamName">
+        <span class="actual-text">&nbsp;@ViewBag.TeamName&nbsp;</span>
+        <span aria-hidden="true" class="home-hover-text">&nbsp;@ViewBag.TeamName&nbsp;</span>
+    </h1>
+
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="sm:flex sm:items-center">
+            <div class="sm:flex-auto">
+                <h1 class="text-base font-semibold leading-6 text-gray-900">Select team to show projects</h1>
+                <ul role="list" class="mt-2 max-w-72">
+                    @await Component.InvokeAsync("UserHasExistingTeam", new { userId = userId })
+                </ul>
+@*                 <p class="mt-2 text-sm text-gray-700">A list of all the projcets in the team including their name and description.</p> *@
+            </div>
+            @if (ViewBag.UserTeamRole == "Leader" || ViewBag.UserRole == "Moderator")
             {
-                <tr>
-                    <td class="cursor-pointer" onclick="showTasks('@project.Id')">@project.Name</td>
-                    <td>@project.Description</td>
-                    <td>ManagerNot</td>
-                    <td>
-                        <button type="button" class="btn btn-primary" onclick="openAddTaskModal(@project.Id)">Add Task</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        <div id="tasks_@project.Id" style="display: none;"></div>
-                    </td>              
-                </tr>
+                <div class="mt-8 ml-16 sm:flex-none">
+                    <a asp-action="Create" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Create new project</a>
+                </div>
             }
-        </tbody>
-    </table>
+        </div>
+        <div class="mt-8 flow-root">
+            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Project Name</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Project Description</th>
+@*                                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Project Role</th> *@
+                                <th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
+                                    Add Task
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var project in Model)
+                            {
+                                <tr class="border-b border-gray-200 border-solid">
+                                    <td class="cursor-pointer whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0" onclick="showTasks('@project.Id')">@project.Name</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">@project.Description</td>
+                                    @* <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                        ManagerNot
+                                        
+                                    </td> *@
+                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium">
+                                        <button type="button" class="btn btn-primary text-indigo-600 hover:text-indigo-900" onclick="openAddTaskModal(@project.Id)">Add Task</button>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-200 border-solid">
+                                    <td colspan="3">
+                                        <div id="tasks_@project.Id" style="display: none;"></div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 else
 {
@@ -197,3 +224,47 @@ else
 
     </script>
 }
+
+<style>
+    /* === removing default button style ===*/
+    .hometitleUI {
+        margin: 0;
+        height: auto;
+        background: transparent;
+        padding: 0;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* button styling */
+    .hometitleUI {
+        --border-right: 6px;
+        --text-stroke-color: rgba(0,0,0,0.4);
+        --animation-color: #e3882d;
+        letter-spacing: 3px;
+        text-decoration: none;
+        font-family: "Arial";
+        position: relative;
+        text-transform: uppercase;
+        color: transparent;
+        -webkit-text-stroke: 3px var(--text-stroke-color);
+    }
+    /* this is the text, when you hover on button */
+    .home-hover-text {
+        position: absolute;
+        box-sizing: border-box;
+        content: attr(data-text);
+        color: var(--animation-color);
+        width: 0%;
+        inset: 0;
+        /*         border-right: var(--border-right) solid var(--animation-color); */
+        overflow: hidden;
+        transition: 0.5s;
+        -webkit-text-stroke: 1px var(--animation-color);
+    }
+    /* hover */
+    .hometitleUI:hover .home-hover-text {
+        width: 100%;
+        filter: drop-shadow(0 0 23px var(--animation-color))
+    }
+</style>

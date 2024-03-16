@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Flow.Controllers
 {
     public class CalendarController : Controller
     {
+
+        [Authorize]
         // GET: CalendarController
         public ActionResult Index()
         {

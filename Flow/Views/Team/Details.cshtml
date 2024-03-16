@@ -3,23 +3,27 @@
     var teamDetails = ViewData["TeamDetails"] as List<UserTeamRoleViewModel>;
 }
 
-<h2>@ViewData["TeamName"] - Details</h2>
-
+<h1 class="font-semibold text-2xl">@ViewData["TeamName"]</h1>
 @if (teamDetails != null && teamDetails.Count > 0)
 {
-    <table class="table">
+
+
+
+    <table class="min-w-full divide-y divide-gray-300">
         <thead>
             <tr>
-                <th>Username</th>
-                <th>Role</th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Username</th>
+                <th scope="col" class="py-3.5 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Role</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var detail in teamDetails)
             {
-                <tr>
-                    <td>@detail.Username</td>
-                    <td>@detail.Role</td>
+                <tr class="border-b border-gray-200 border-solid">
+                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">@detail.Username</td>
+                    <td class="whitespace-nowrap py-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                        @detail.Role
+                    </td>
                 </tr>
             }
         </tbody>

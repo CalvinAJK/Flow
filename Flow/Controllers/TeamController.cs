@@ -125,10 +125,11 @@ namespace Flow.Controllers
             return View(team);
         }
 
+        [Authorize]
         // POST: TeamController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Team team)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,OrganizationId")] Team team)
         {
             if (id != team.Id)
             {
@@ -159,18 +160,34 @@ namespace Flow.Controllers
         }
 
         // GET: TeamController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> DeleteAsync(int id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var team = await _context.Teams.FindAsync(id);
+            if (team == null)
+            {
+                return NotFound();
+            }
+            return View(team);
         }
 
         // POST: TeamController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
             try
             {
+                var team = await _context.Teams.FindAsync(id);
+                if (team != null)
+                {
+                    team.IsDeleted = true; // Mark the team as deleted instead of actually deleting it
+                    await _context.SaveChangesAsync();
+                }
                 return RedirectToAction(nameof(Index));
             }
             catch

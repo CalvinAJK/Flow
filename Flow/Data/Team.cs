@@ -9,7 +9,7 @@
         public bool IsDeleted { get; set; } = false;
 
         // Foreign key property referencing the Organization
-        public int OrganizationId { get; set; } = 0;
+        public int OrganizationId { get; set; }
         public Organization? Organization { get; set; }
 
         // Navigation property for TeamRoles

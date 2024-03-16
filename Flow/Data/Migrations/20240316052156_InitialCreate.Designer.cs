@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Flow.Data.Migrations
 {
     [DbContext(typeof(FlowContext))]
-    [Migration("20240314045504_InitialCreate")]
+    [Migration("20240316052156_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
